@@ -27,8 +27,14 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
+import { platformApi } from "./platform-shared";
+import { EstimatePlanner, type PricingSelection } from "./estimate-planner";
 import { company, isPreview, L, services } from "@/lib/content";
-import { todayInTanzania, type InquiryDeliveryStatus } from "@/lib/inquiry";
+import {
+  inquirySchema,
+  todayInTanzania,
+  type InquiryDeliveryStatus,
+} from "@/lib/inquiry";
 import {
   Breadcrumb,
   ButtonLink,
@@ -36,6 +42,16 @@ import {
   serviceIcons,
   useSite,
 } from "./site-shell";
+
+import {
+  divisionFields,
+  inquiryDivisionFields,
+  divisionPreferenceOptions,
+  serviceDetailRows,
+  eventTypeOptions,
+  cateringStyleOptions,
+  regions,
+} from "@/lib/service-fields";
 
 const DRAFT_KEY = "toc-inquiry-draft-v1";
 type RequestData = {
@@ -48,14 +64,42 @@ type RequestData = {
   eventDate: string;
   dateFlexible: boolean;
   location: string;
+  region: string;
+  alternativeDate: string;
+  cateringRequired: string;
+  leadSource: string;
   guestCount: string;
   preferences: string[];
+  pricingSelections: PricingSelection[];
   serviceStyle: string;
   dietary: string;
   budget: string;
   message: string;
   consent: boolean;
   website: string;
+  additionalServices: string[];
+  eventDuration: string;
+  venueStatus: string;
+  eventLogistics: string;
+  mealTimes: string;
+  kitchenAccess: string;
+  cateringLogistics: string;
+  productionDuration: string;
+  powerAvailability: string;
+  productionSafety: string;
+  propertyType: string;
+  area: string;
+  floors: string;
+  frequency: string;
+  inspectionDate: string;
+  supplies: string;
+  accessRestrictions: string;
+  ictCategory: string;
+  existingSystem: string;
+  affectedUsers: string;
+  urgency: string;
+  deliveryMode: string;
+  consultation: string;
 };
 const empty: RequestData = {
   service: "",
@@ -67,14 +111,42 @@ const empty: RequestData = {
   eventDate: "",
   dateFlexible: true,
   location: "",
+  region: "",
+  alternativeDate: "",
+  cateringRequired: "",
+  leadSource: "",
   guestCount: "",
   preferences: [],
+  pricingSelections: [],
   serviceStyle: "",
   dietary: "",
   budget: "",
   message: "",
   consent: false,
   website: "",
+  additionalServices: [],
+  eventDuration: "",
+  venueStatus: "",
+  eventLogistics: "",
+  mealTimes: "",
+  kitchenAccess: "",
+  cateringLogistics: "",
+  productionDuration: "",
+  powerAvailability: "",
+  productionSafety: "",
+  propertyType: "",
+  area: "",
+  floors: "",
+  frequency: "",
+  inspectionDate: "",
+  supplies: "",
+  accessRestrictions: "",
+  ictCategory: "",
+  existingSystem: "",
+  affectedUsers: "",
+  urgency: "",
+  deliveryMode: "",
+  consultation: "",
 };
 type Errors = Partial<Record<keyof RequestData, string>>;
 function payload(data: RequestData, origin: "quotation" | "contact") {
@@ -101,7 +173,7 @@ function Field({
   children: ReactNode;
   hint?: string;
 }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <div className={`field${error ? " has-error" : ""}`}>
       <label htmlFor={id}>
@@ -129,7 +201,7 @@ function Field({
   );
 }
 function PreviewNotice() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return isPreview ? (
     <div className="form-preview-notice">
       <Info size={16} />
@@ -171,18 +243,23 @@ export function SuccessPanel({
   data,
   deliveryStatus,
   compact = false,
+  previewClaimPath,
 }: {
   reference: string;
   data: RequestData;
   deliveryStatus: InquiryDeliveryStatus;
   compact?: boolean;
+  previewClaimPath?: string;
 }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   const [copied, setCopied] = useState(false);
   const previewOnly = deliveryStatus === "preview_local_only";
   const emailSent = deliveryStatus === "email_sent";
   const service = services.find((s) => s.slug === data.service);
-  const summary = `${company.name}\nInquiry reference: ${reference}\nService: ${service?.title.en || (data.service === "contact" ? "General inquiry" : "Help choosing a service")}\nName: ${data.name}\nOrganization: ${data.organization || "Not specified"}\nEmail: ${data.email}\nPhone: ${data.phone || "Not specified"}\nEvent type: ${data.eventType || "Not specified"}\nLocation: ${data.location || "Not specified"}\nPreferred date: ${data.dateFlexible ? "To be confirmed" : data.eventDate}\nGuests: ${data.guestCount || "To be discussed"}\nPreferences: ${data.preferences.join(", ") || "None specified"}\nServing style: ${data.serviceStyle || "To be discussed"}\nDietary requirements: ${data.dietary || "None specified"}\nBudget: ${data.budget || "To be discussed"}\nMessage: ${data.message || "None supplied"}\n\nThis is an inquiry, not a booking or a formal quotation.${previewOnly ? "\nPreview submission: stored locally; not automatically delivered to TOC." : ""}`;
+  const extraSummary = serviceDetailRows(data)
+    .map(([label, value]) => `${label}: ${value}`)
+    .join("\n");
+  const summary = `${company.name}\nInquiry reference: ${reference}\nService: ${service?.title.en || (data.service === "contact" ? "General inquiry" : "Help choosing a service")}\nName: ${data.name}\nOrganization: ${data.organization || "Not specified"}\nEmail: ${data.email}\nPhone: ${data.phone || "Not specified"}\nEvent type: ${data.eventType || "Not specified"}\nLocation: ${data.location || "Not specified"}\nRegion: ${data.region || "Not supplied"}\nAlternative date: ${data.alternativeDate || "Not supplied"}\nSource: ${data.leadSource || "Not supplied"}\nSelected price rules: ${data.pricingSelections.map((item) => `${item.bookId}:${item.ruleId} x ${item.quantity}`).join("; ") || "None"}\nPreferred date: ${data.dateFlexible ? "To be confirmed" : data.eventDate}\nGuests: ${data.guestCount || "To be discussed"}\nPreferences: ${data.preferences.join(", ") || "None specified"}\nServing style: ${data.serviceStyle || "To be discussed"}\nDietary requirements: ${data.dietary || "None specified"}\nBudget: ${data.budget || "To be discussed"}\nAdditional divisions: ${data.additionalServices?.join(", ") || "None"}\n${extraSummary}\nMessage: ${data.message || "None supplied"}\n\nThis is an inquiry, not a booking or a formal quotation.${previewOnly ? "\nPreview submission: stored locally; not automatically delivered to TOC." : ""}`;
   const download = () => {
     const url = URL.createObjectURL(
       new Blob([summary], { type: "text/plain;charset=utf-8" }),
@@ -242,6 +319,36 @@ export function SuccessPanel({
                   ),
                 )}
       </p>
+      <div className="scope-note">
+        <Link href="/portal">
+          {t(
+            L(
+              "Track requests in your customer portal",
+              "Fuatilia maombi kwenye mlango wako wa mteja",
+            ),
+          )}{" "}
+          →
+        </Link>
+        <p>
+          {t(
+            L(
+              "Register and verify the email used for this request, then claim it using the secure email link. A reference number alone does not grant access.",
+              "Sajili na thibitisha barua pepe ya ombi hili, kisha liunganishe kwa kiungo salama cha barua pepe. Namba ya ombi pekee haitoi ufikiaji.",
+            ),
+          )}
+        </p>
+        {previewClaimPath && (
+          <Link href={previewClaimPath}>
+            {t(
+              L(
+                "Preview-only claim link · no email sent",
+                "Kiungo cha hakikisho pekee · hakuna barua iliyotumwa",
+              ),
+            )}{" "}
+            →
+          </Link>
+        )}
+      </div>
       <div className="reference-box">
         <small>{t(L("YOUR REFERENCE", "NAMBA YA OMBI"))}</small>
         <div>
@@ -305,7 +412,13 @@ export function QuotationPage({
 }: {
   initialService?: string;
 }) {
-  const { t } = useSite();
+  const {
+    t,
+    language,
+    catalog: services,
+    profile: company,
+    content,
+  } = useSite();
   const [data, setData] = useState<RequestData>({
     ...empty,
     service: [...services.map((s) => s.slug), "not-sure"].includes(
@@ -318,24 +431,96 @@ export function QuotationPage({
   const [errors, setErrors] = useState<Errors>({});
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const submissionKey = useRef<string>("");
+  const [previewClaimPath, setPreviewClaimPath] = useState("");
   const [reference, setReference] = useState("");
   const [deliveryStatus, setDeliveryStatus] =
     useState<InquiryDeliveryStatus>("saved_for_review");
   const [draftAvailable, setDraftAvailable] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [accountReady, setAccountReady] = useState(false),
+    [accountSaved, setAccountSaved] = useState<{
+      data: Record<string, unknown>;
+      step: number;
+      version: number;
+    } | null>(null),
+    [accountVersion, setAccountVersion] = useState(0),
+    [draftNotice, setDraftNotice] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
   const steps = [
     L("Service", "Huduma"),
-    L("Your occasion", "Tukio lako"),
+    L("Requirements", "Mahitaji"),
     L("The details", "Maelezo"),
     L("About you", "Kukuhusu"),
     L("Review", "Hakiki"),
   ];
   useEffect(() => {
-    setDraftAvailable(!!localStorage.getItem(DRAFT_KEY));
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (
+          !draft.savedAt ||
+          Date.now() - Date.parse(draft.savedAt) > 7 * 86400000
+        )
+          localStorage.removeItem(DRAFT_KEY);
+        else setDraftAvailable(true);
+      }
+    } catch {
+      /* Browser storage is optional. */
+    }
+    let active = true;
+    void platformApi<{ user: unknown }>("auth/session")
+      .then(async (session) => {
+        if (!session.user) return;
+        const result = await platformApi<{ draft: typeof accountSaved }>(
+          "auth/inquiry-draft",
+        );
+        if (active) {
+          setAccountReady(true);
+          setAccountSaved(result.draft);
+          setAccountVersion(result.draft?.version || 0);
+        }
+      })
+      .catch(() => {
+        /* Guest inquiry remains available. */
+      });
+    return () => {
+      active = false;
+    };
   }, []);
   const set = <K extends keyof RequestData>(key: K, value: RequestData[K]) => {
-    setData((prev) => ({ ...prev, [key]: value }));
+    submissionKey.current = "";
+    setData((prev) => {
+      if (key === "service") {
+        const cleared = { ...prev };
+        for (const field of Object.values(divisionFields).flat())
+          (cleared as Record<string, unknown>)[field.key] = "";
+        return {
+          ...cleared,
+          [key]: value,
+          preferences: [],
+          pricingSelections: [],
+          additionalServices: prev.additionalServices.filter(
+            (item) => item !== value,
+          ),
+          dietary: "",
+          serviceStyle: "",
+        };
+      }
+      if (key === "cateringRequired")
+        return {
+          ...prev,
+          [key]: value,
+          serviceStyle: "",
+          dietary: "",
+          additionalServices:
+            value === "yes"
+              ? [...new Set([...prev.additionalServices, "catering"])]
+              : prev.additionalServices,
+        };
+      return { ...prev, [key]: value };
+    });
     setErrors((prev) => ({ ...prev, [key]: undefined }));
     setError("");
     setSaved(false);
@@ -397,6 +582,47 @@ export function QuotationPage({
           ),
         );
     }
+    if (s === 1 || s === 2) {
+      const parsed = inquirySchema.safeParse({
+        ...payload(data, "quotation"),
+        name: "Validation only",
+        email: "validation@example.com",
+        phone: "+255700000000",
+        consent: true,
+      });
+      if (!parsed.success)
+        for (const issue of parsed.error.issues) {
+          const key = String(issue.path[0]) as keyof RequestData;
+          const belongs =
+            s === 1
+              ? [
+                  "eventType",
+                  "guestCount",
+                  "region",
+                  "alternativeDate",
+                ].includes(key) ||
+                !!inquiryDivisionFields(
+                  data.service,
+                  data.cateringRequired,
+                ).find((field) => field.key === key)
+              : [
+                  "preferences",
+                  "message",
+                  "serviceStyle",
+                  "pricingSelections",
+                ].includes(key);
+          if (belongs)
+            e[key] =
+              language === "en"
+                ? issue.message
+                : t(
+                    L(
+                      issue.message,
+                      "Tafadhali hakiki sehemu hii; chagua chaguo lililopo au jaza taarifa zinazohitajika.",
+                    ),
+                  );
+        }
+    }
     if (s === 3) {
       if (data.name.trim().length < 2)
         e.name = t(L("Please enter your full name.", "Weka jina lako kamili."));
@@ -442,39 +668,75 @@ export function QuotationPage({
     if (validate(step)) go(step + 1);
   };
   const saveDraft = () => {
-    localStorage.setItem(
-      DRAFT_KEY,
-      JSON.stringify({
-        data: { ...data, consent: false, website: "" },
-        step,
-        savedAt: new Date().toISOString(),
-      }),
-    );
-    setDraftAvailable(true);
-    setSaved(true);
+    try {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          data: { ...data, consent: false, website: "" },
+          step,
+          savedAt: new Date().toISOString(),
+        }),
+      );
+      setDraftAvailable(true);
+      setSaved(true);
+    } catch {
+      setError(
+        t(
+          L(
+            "This browser blocked draft storage. Keep this tab open or save to a verified account.",
+            "Kivinjari kimezuia kuhifadhi rasimu. Acha ukurasa wazi au hifadhi kwenye akaunti iliyothibitishwa.",
+          ),
+        ),
+      );
+    }
+  };
+  const restoreDraft = (draft: {
+    data: Record<string, unknown>;
+    step: number;
+  }) => {
+    const restored = { ...empty };
+    for (const key of Object.keys(empty) as (keyof RequestData)[]) {
+      const value = draft.data[key];
+      if (key === "guestCount" && typeof value === "number")
+        restored.guestCount = String(value);
+      else if (Array.isArray(empty[key]) && Array.isArray(value))
+        (restored as Record<string, unknown>)[key] = value;
+      else if (typeof value === typeof empty[key] && !Array.isArray(value))
+        (restored as Record<string, unknown>)[key] = value;
+    }
+    restored.consent = false;
+    restored.website = "";
+    setData(restored);
+    setStep(Math.min(4, Math.max(0, Number(draft.step) || 0)));
+    setErrors({});
+    setError("");
   };
   const resume = () => {
     try {
       const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}");
-      if (draft.data && typeof draft.data === "object") {
-        const restored = { ...empty };
-        for (const key of Object.keys(empty) as (keyof RequestData)[]) {
-          if (typeof draft.data[key] === typeof empty[key])
-            (restored as Record<string, unknown>)[key] = draft.data[key];
-        }
-        restored.consent = false;
-        restored.website = "";
-        setData(restored);
-        setStep(Math.min(4, Math.max(0, Number(draft.step) || 0)));
+      if (
+        draft.data &&
+        typeof draft.data === "object" &&
+        !Array.isArray(draft.data)
+      ) {
+        restoreDraft(draft);
         setDraftAvailable(false);
       }
     } catch {
-      localStorage.removeItem(DRAFT_KEY);
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* Storage disabled. */
+      }
       setDraftAvailable(false);
     }
   };
   const removeDraft = () => {
-    localStorage.removeItem(DRAFT_KEY);
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* Storage disabled. */
+    }
     setDraftAvailable(false);
     setSaved(false);
   };
@@ -488,10 +750,14 @@ export function QuotationPage({
     setBusy(true);
     setError("");
     try {
+      if (!submissionKey.current) submissionKey.current = crypto.randomUUID();
       const res = await fetch("/api/inquiries", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload(data, "quotation")),
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": submissionKey.current,
+        },
+        body: JSON.stringify({ ...payload(data, "quotation"), language }),
       });
       const body = await res.json();
       if (!res.ok) {
@@ -504,12 +770,59 @@ export function QuotationPage({
               ),
             ),
         );
-        if (body.fields) setErrors(body.fields);
+        if (body.fields) {
+          const keys = Object.keys(body.fields);
+          const target = keys.includes("service")
+            ? 0
+            : keys.some((key) =>
+                  [
+                    "location",
+                    "region",
+                    "eventType",
+                    "alternativeDate",
+                    "eventDate",
+                    "guestCount",
+                    ...inquiryDivisionFields(
+                      data.service,
+                      data.cateringRequired,
+                    ).map((field) => field.key),
+                  ].includes(key),
+                )
+              ? 1
+              : keys.some((key) =>
+                    [
+                      "preferences",
+                      "message",
+                      "serviceStyle",
+                      "pricingSelections",
+                    ].includes(key),
+                  )
+                ? 2
+                : keys.some((key) => ["name", "email", "phone"].includes(key))
+                  ? 3
+                  : 4;
+          setStep(target);
+          setErrors(body.fields);
+          requestAnimationFrame(() =>
+            document.getElementById(`quote-${keys[0]}`)?.focus(),
+          );
+        }
         return;
       }
       setDeliveryStatus(body.deliveryStatus);
       setReference(body.reference);
-      localStorage.removeItem(DRAFT_KEY);
+      setPreviewClaimPath(body.previewClaimPath || "");
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* A saved submission is not undone by blocked browser storage. */
+      }
+      if (accountReady && accountVersion)
+        void platformApi("auth/inquiry-draft/delete", {
+          expectedVersion: accountVersion,
+        }).catch(() => {
+          /* A newer draft in another tab is deliberately preserved. */
+        });
       window.scrollTo({ top: 150, behavior: "smooth" });
     } catch {
       setError(
@@ -526,35 +839,16 @@ export function QuotationPage({
   };
   const chosenService = services.find((s) => s.slug === data.service);
   const requirements =
-    data.service === "catering"
-      ? [
-          L("Tea & refreshments", "Chai na viburudisho"),
-          L("Breakfast", "Kifungua kinywa"),
-          L("Lunch or dinner buffet", "Bafe ya mchana au jioni"),
-          L("Grilled food", "Chakula cha kuchoma"),
-          L("Service staff", "Wahudumu"),
-          L("Tableware & setup", "Vyombo na maandalizi"),
-        ]
-      : data.service === "entertainment"
-        ? [
-            L("Sound & microphones", "Sauti na vipaza sauti"),
-            L("Stage & lighting", "Jukwaa na mwanga"),
-            L("Photography", "Picha"),
-            L("Videography", "Video"),
-            L("Live entertainment", "Burudani ya moja kwa moja"),
-            L("Event hosting", "Uongozaji wa hafla"),
-          ]
-        : [
-            L("Venue coordination", "Uratibu wa ukumbi"),
-            L("Catering", "Upishi"),
-            L("Decoration & styling", "Mapambo"),
-            L("Sound & lighting", "Sauti na mwanga"),
-            L("Photography & video", "Picha na video"),
-            L("Guest coordination", "Uratibu wa wageni"),
-          ];
+    divisionPreferenceOptions[data.service] ||
+    divisionPreferenceOptions["event-management"];
+  const isTechnical = ["general-cleaning", "ict-solutions"].includes(
+    data.service,
+  );
   const titles = [
     L("What can we help you with?", "Tukusaidie kwa huduma gani?"),
-    L("Tell us about your occasion.", "Tueleze kuhusu tukio lako."),
+    isTechnical
+      ? L("Tell us about your requirements.", "Tueleze kuhusu mahitaji yako.")
+      : L("Tell us about your occasion.", "Tueleze kuhusu tukio lako."),
     L("Let’s add the thoughtful details.", "Tuongeze maelezo muhimu."),
     L("And a little about you.", "Na kidogo kukuhusu."),
     L("Everything looking right?", "Kila kitu kiko sawa?"),
@@ -591,6 +885,7 @@ export function QuotationPage({
               reference={reference}
               data={data}
               deliveryStatus={deliveryStatus}
+              previewClaimPath={previewClaimPath}
             />
           </div>
         ) : (
@@ -608,8 +903,8 @@ export function QuotationPage({
               <p>
                 {t(
                   L(
-                    "Tell us a little about your occasion. We’ll take it from there.",
-                    "Tueleze kidogo kuhusu tukio lako. Tutaendelea kutoka hapo.",
+                    "Tell us about your event, premises or technical challenge. We’ll take it from there.",
+                    "Tueleze kuhusu hafla, jengo au changamoto ya kiufundi. Tutaendelea kutoka hapo.",
                   ),
                 )}
               </p>
@@ -662,6 +957,119 @@ export function QuotationPage({
                       <Trash2 size={15} />
                     </button>
                   </div>
+                )}
+                {accountReady && (
+                  <details className="account-draft-controls">
+                    <summary>
+                      {t(
+                        L(
+                          "Save or resume with my verified account",
+                          "Hifadhi au endelea kwa akaunti yangu iliyothibitishwa",
+                        ),
+                      )}
+                    </summary>
+                    <p>
+                      {t(
+                        L(
+                          "Account drafts expire after 30 days. Saving does not submit an inquiry or record consent.",
+                          "Rasimu za akaunti huisha baada ya siku 30. Kuhifadhi hakutumi ombi wala kurekodi ridhaa.",
+                        ),
+                      )}
+                    </p>
+                    <button
+                      type="button"
+                      className="platform-small-button"
+                      onClick={async () => {
+                        try {
+                          const result = await platformApi<{ version: number }>(
+                            "auth/inquiry-draft",
+                            {
+                              data: {
+                                ...payload(data, "quotation"),
+                                language,
+                                consent: false,
+                              },
+                              step,
+                              expectedVersion: accountVersion,
+                            },
+                          );
+                          setAccountVersion(result.version);
+                          setAccountSaved({
+                            data: { ...data, consent: false },
+                            step,
+                            version: result.version,
+                          });
+                          setDraftNotice(
+                            t(
+                              L(
+                                "Saved to your account. Nothing was submitted.",
+                                "Imehifadhiwa kwenye akaunti. Hakuna ombi lililotumwa.",
+                              ),
+                            ),
+                          );
+                        } catch (error) {
+                          setDraftNotice(
+                            error instanceof Error
+                              ? error.message
+                              : "Draft save failed.",
+                          );
+                        }
+                      }}
+                    >
+                      {t(L("Save to my account", "Hifadhi kwenye akaunti"))}
+                    </button>
+                    {accountSaved && (
+                      <>
+                        <button
+                          type="button"
+                          className="platform-small-button"
+                          onClick={() => restoreDraft(accountSaved)}
+                        >
+                          {t(
+                            L(
+                              "Resume account draft",
+                              "Endelea na rasimu ya akaunti",
+                            ),
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          className="platform-small-button"
+                          onClick={async () => {
+                            try {
+                              await platformApi("auth/inquiry-draft/delete", {
+                                expectedVersion: accountVersion,
+                              });
+                              setAccountSaved(null);
+                              setAccountVersion(0);
+                              setDraftNotice(
+                                t(
+                                  L(
+                                    "Account draft deleted.",
+                                    "Rasimu ya akaunti imefutwa.",
+                                  ),
+                                ),
+                              );
+                            } catch (error) {
+                              setDraftNotice(
+                                error instanceof Error
+                                  ? error.message
+                                  : "Draft deletion failed.",
+                              );
+                            }
+                          }}
+                        >
+                          {t(
+                            L(
+                              "Delete saved account draft",
+                              "Futa rasimu ya akaunti",
+                            ),
+                          )}
+                        </button>
+                      </>
+                    )}
+                    {draftNotice && <p role="status">{draftNotice}</p>}
+                  </details>
                 )}
                 <form onSubmit={submit} noValidate>
                   <div className="wizard-content">
@@ -763,45 +1171,88 @@ export function QuotationPage({
                     )}
                     {step === 1 && (
                       <div className="form-fields">
-                        <Field
-                          id="quote-eventType"
-                          label={t(
-                            L("What are you planning?", "Unapanga nini?"),
-                          )}
-                          optional
-                        >
-                          <select {...inputProps("eventType")}>
-                            <option value="">
-                              {t(L("Select an occasion", "Chagua tukio"))}
-                            </option>
-                            {[
-                              "Corporate event",
-                              "Conference or workshop",
-                              "Institutional function",
-                              "Wedding or celebration",
-                              "Private gathering",
-                              "Recurring meal service",
-                              "Other",
-                            ].map((v, i) => (
-                              <option key={v} value={v}>
-                                {t(
-                                  L(
-                                    v,
-                                    [
-                                      "Hafla ya kampuni",
-                                      "Mkutano au warsha",
-                                      "Shughuli ya taasisi",
-                                      "Harusi au sherehe",
-                                      "Mkusanyiko binafsi",
-                                      "Chakula cha mara kwa mara",
-                                      "Nyingine",
-                                    ][i],
-                                  ),
-                                )}
+                        {!isTechnical && (
+                          <Field
+                            id="quote-eventType"
+                            label={t(
+                              L("What are you planning?", "Unapanga nini?"),
+                            )}
+                            optional={
+                              ![
+                                "event-management",
+                                "catering",
+                                "entertainment",
+                              ].includes(data.service)
+                            }
+                            error={errors.eventType}
+                          >
+                            <select {...inputProps("eventType")}>
+                              <option value="">
+                                {t(L("Select an occasion", "Chagua tukio"))}
                               </option>
-                            ))}
-                          </select>
-                        </Field>
+                              {eventTypeOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(option.label)}
+                                </option>
+                              ))}
+                            </select>
+                          </Field>
+                        )}
+                        {inquiryDivisionFields(
+                          data.service,
+                          data.cateringRequired,
+                        ).map((field) => {
+                          const key = field.key as keyof RequestData;
+                          return (
+                            <Field
+                              key={field.key}
+                              id={`quote-${field.key}`}
+                              label={t(field.label)}
+                              error={errors[key]}
+                              optional={!field.required}
+                              hint={field.hint ? t(field.hint) : undefined}
+                            >
+                              {field.type === "select" ? (
+                                <select {...inputProps(key)}>
+                                  <option value="">
+                                    {t(L("Please select", "Tafadhali chagua"))}
+                                  </option>
+                                  {field.options?.map((option) => (
+                                    <option
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {t(option.label)}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : field.type === "textarea" ? (
+                                <textarea
+                                  {...inputProps(key)}
+                                  rows={3}
+                                  maxLength={1000}
+                                />
+                              ) : (
+                                <input
+                                  {...inputProps(key)}
+                                  type={field.type}
+                                  min={
+                                    field.type === "date"
+                                      ? todayInTanzania()
+                                      : field.type === "number"
+                                        ? "1"
+                                        : undefined
+                                  }
+                                  max={field.max}
+                                  step={field.key === "area" ? "0.01" : "1"}
+                                  maxLength={
+                                    field.type === "text" ? 500 : undefined
+                                  }
+                                />
+                              )}
+                            </Field>
+                          );
+                        })}
                         <div className="field-row">
                           <Field
                             id="quote-eventDate"
@@ -833,27 +1284,81 @@ export function QuotationPage({
                               )}
                             </label>
                           </Field>
+                          {!isTechnical && (
+                            <Field
+                              id="quote-guestCount"
+                              label={t(
+                                L("Approximate guests", "Idadi ya wageni"),
+                              )}
+                              error={errors.guestCount}
+                              optional={
+                                ![
+                                  "event-management",
+                                  "catering",
+                                  "entertainment",
+                                ].includes(data.service)
+                              }
+                            >
+                              <input
+                                {...inputProps("guestCount")}
+                                type="number"
+                                min="1"
+                                max="100000"
+                                step="1"
+                                placeholder={t(L("e.g. 150", "Mf. 150"))}
+                              />
+                            </Field>
+                          )}
+                        </div>
+                        <Field
+                          id="quote-region"
+                          label={t(L("Service region", "Mkoa wa huduma"))}
+                          error={errors.region}
+                        >
+                          <select {...inputProps("region")}>
+                            <option value="">
+                              {t(L("Select a region", "Chagua mkoa"))}
+                            </option>
+                            {regions.map((region) => (
+                              <option key={region} value={region}>
+                                {region === "remote"
+                                  ? t(L("Remote service", "Huduma ya mbali"))
+                                  : region === "other"
+                                    ? t(
+                                        L(
+                                          "Other / outside Tanzania",
+                                          "Nyingine / nje ya Tanzania",
+                                        ),
+                                      )
+                                    : region}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                        {data.service === "event-management" && (
                           <Field
-                            id="quote-guestCount"
-                            label={t(
-                              L("Approximate guests", "Idadi ya wageni"),
-                            )}
-                            error={errors.guestCount}
+                            id="quote-alternativeDate"
+                            label={t(L("Alternative date", "Tarehe mbadala"))}
+                            error={errors.alternativeDate}
                             optional
                           >
                             <input
-                              {...inputProps("guestCount")}
-                              type="number"
-                              min="1"
-                              max="100000"
-                              step="1"
-                              placeholder={t(L("e.g. 150", "Mf. 150"))}
+                              {...inputProps("alternativeDate")}
+                              type="date"
+                              min={todayInTanzania()}
                             />
                           </Field>
-                        </div>
+                        )}
                         <Field
                           id="quote-location"
-                          label={t(L("Town or planned venue", "Mji au ukumbi"))}
+                          label={t(
+                            isTechnical
+                              ? L(
+                                  "Town / site or remote location",
+                                  "Mji / eneo au eneo la huduma ya mbali",
+                                )
+                              : L("Town or planned venue", "Mji au ukumbi"),
+                          )}
                           error={errors.location}
                         >
                           <input
@@ -869,6 +1374,20 @@ export function QuotationPage({
                     )}
                     {step === 2 && (
                       <div className="form-fields">
+                        <div id="quote-pricingSelections" tabIndex={-1}>
+                          <EstimatePlanner
+                            service={data.service}
+                            selections={data.pricingSelections}
+                            onChange={(value) =>
+                              set("pricingSelections", value)
+                            }
+                          />
+                          {errors.pricingSelections && (
+                            <p className="field-error" role="alert">
+                              {errors.pricingSelections}
+                            </p>
+                          )}
+                        </div>
                         <fieldset className="preferences-field">
                           <legend>
                             {t(
@@ -880,13 +1399,38 @@ export function QuotationPage({
                             <span>
                               {t(
                                 L(
-                                  "Optional · Select all that apply",
-                                  "Si lazima · Chagua zinazofaa",
+                                  [
+                                    "catering",
+                                    "entertainment",
+                                    "general-cleaning",
+                                  ].includes(data.service)
+                                    ? "Required · Select at least one"
+                                    : "Optional · Select all that apply",
+                                  [
+                                    "catering",
+                                    "entertainment",
+                                    "general-cleaning",
+                                  ].includes(data.service)
+                                    ? "Inahitajika · Chagua angalau moja"
+                                    : "Si lazima · Chagua zinazofaa",
                                 ),
                               )}
                             </span>
                           </legend>
-                          <div className="preference-grid">
+                          {errors.preferences && (
+                            <p
+                              className="field-error"
+                              role="alert"
+                              id="quote-preferences-error"
+                            >
+                              {errors.preferences}
+                            </p>
+                          )}
+                          <div
+                            className="preference-grid"
+                            id="quote-preferences"
+                            tabIndex={-1}
+                          >
                             {requirements.map((item) => (
                               <label
                                 key={item.en}
@@ -915,7 +1459,9 @@ export function QuotationPage({
                             ))}
                           </div>
                         </fieldset>
-                        {data.service === "catering" && (
+                        {(data.service === "catering" ||
+                          (data.service === "event-management" &&
+                            data.cateringRequired === "yes")) && (
                           <>
                             <Field
                               id="quote-serviceStyle"
@@ -925,29 +1471,25 @@ export function QuotationPage({
                                   "Mtindo wa utoaji wa chakula",
                                 ),
                               )}
-                              optional
+                              error={errors.serviceStyle}
                             >
                               <select {...inputProps("serviceStyle")}>
                                 <option value="">
-                                  {t(L("Let’s discuss", "Tujadiliane"))}
-                                </option>
-                                <option value="Buffet">
-                                  {t(L("Buffet", "Bafe"))}
-                                </option>
-                                <option value="Plated service">
-                                  {t(L("Plated service", "Huduma ya sahani"))}
-                                </option>
-                                <option value="Food stations">
-                                  {t(L("Food stations", "Vituo vya chakula"))}
-                                </option>
-                                <option value="Packed meals">
                                   {t(
                                     L(
-                                      "Packed meals",
-                                      "Chakula cha kufungashwa",
+                                      "Select a style or ask for guidance",
+                                      "Chagua mtindo au omba mwongozo",
                                     ),
                                   )}
                                 </option>
+                                {cateringStyleOptions.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {t(option.label)}
+                                  </option>
+                                ))}
                               </select>
                             </Field>
                             <Field
@@ -979,6 +1521,62 @@ export function QuotationPage({
                             </Field>
                           </>
                         )}
+                        <fieldset className="preferences-field">
+                          <legend>
+                            {t(
+                              L(
+                                "Other divisions to include",
+                                "Idara nyingine za kujumuisha",
+                              ),
+                            )}
+                            <span>
+                              {t(
+                                L(
+                                  "Optional · Coordinated as one inquiry",
+                                  "Si lazima · Ombi moja lililoratibiwa",
+                                ),
+                              )}
+                            </span>
+                          </legend>
+                          <div className="preference-grid">
+                            {services
+                              .filter((item) => item.slug !== data.service)
+                              .map((item) => (
+                                <label key={item.slug}>
+                                  <input
+                                    type="checkbox"
+                                    checked={data.additionalServices.includes(
+                                      item.slug,
+                                    )}
+                                    onChange={(event) =>
+                                      set(
+                                        "additionalServices",
+                                        event.target.checked
+                                          ? [
+                                              ...data.additionalServices,
+                                              item.slug,
+                                            ]
+                                          : data.additionalServices.filter(
+                                              (slug) => slug !== item.slug,
+                                            ),
+                                      )
+                                    }
+                                  />
+                                  <span>{t(item.title)}</span>
+                                </label>
+                              ))}
+                          </div>
+                        </fieldset>
+                        {data.service === "ict-solutions" && (
+                          <p className="scope-note">
+                            {t(
+                              L(
+                                "Never include passwords, API keys or production credentials. Urgency does not guarantee a response time. Supporting files can be exchanged through the protected customer portal after review.",
+                                "Usijumuishe nywila, funguo za API au siri za mifumo. Uharaka hauhakikishi muda wa majibu. Faili zinaweza kutumwa kupitia mlango wa mteja uliolindwa baada ya mapitio.",
+                              ),
+                            )}
+                          </p>
+                        )}
                         <Field
                           id="quote-budget"
                           label={t(
@@ -1007,13 +1605,18 @@ export function QuotationPage({
                         </Field>
                         <Field
                           id="quote-message"
+                          error={errors.message}
                           label={t(
                             L(
-                              "Anything else we should know?",
-                              "Kuna kingine tunachopaswa kujua?",
+                              data.service === "ict-solutions"
+                                ? "Describe the technical or business problem"
+                                : "Anything else we should know?",
+                              data.service === "ict-solutions"
+                                ? "Eleza tatizo la kiufundi au biashara"
+                                : "Kuna kingine tunachopaswa kujua?",
                             ),
                           )}
-                          optional
+                          optional={data.service !== "ict-solutions"}
                         >
                           <textarea
                             {...inputProps("message")}
@@ -1089,6 +1692,41 @@ export function QuotationPage({
                             placeholder="+255 …"
                           />
                         </Field>
+                        <Field
+                          id="quote-leadSource"
+                          label={t(
+                            L(
+                              "How did you hear about TOC?",
+                              "Ulipataje habari za TOC?",
+                            ),
+                          )}
+                          optional
+                        >
+                          <select {...inputProps("leadSource")}>
+                            <option value="">
+                              {t(L("Prefer not to say", "Sipendi kusema"))}
+                            </option>
+                            {[
+                              [
+                                "search",
+                                "Search engine",
+                                "Injini ya utafutaji",
+                              ],
+                              ["referral", "Recommendation", "Pendekezo"],
+                              ["social", "Social media", "Mitandao ya kijamii"],
+                              [
+                                "returning",
+                                "Returning customer",
+                                "Mteja anayerejea",
+                              ],
+                              ["other", "Other", "Nyingine"],
+                            ].map(([value, en, sw]) => (
+                              <option key={value} value={value}>
+                                {t(L(en, sw))}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
                         <div className="privacy-reassurance">
                           <ShieldCheck size={20} />
                           <p>
@@ -1137,6 +1775,58 @@ export function QuotationPage({
                               <dd>{data.location}</dd>
                             </div>
                             <div>
+                              <dt>{t(L("Region", "Mkoa"))}</dt>
+                              <dd>{data.region}</dd>
+                            </div>
+                            {data.alternativeDate && (
+                              <div>
+                                <dt>
+                                  {t(L("Alternative date", "Tarehe mbadala"))}
+                                </dt>
+                                <dd>{data.alternativeDate}</dd>
+                              </div>
+                            )}
+                            {data.leadSource && (
+                              <div>
+                                <dt>
+                                  {t(
+                                    L(
+                                      "Self-reported source",
+                                      "Chanzo ulichotaja",
+                                    ),
+                                  )}
+                                </dt>
+                                <dd>{data.leadSource}</dd>
+                              </div>
+                            )}
+                            {data.pricingSelections.length > 0 && (
+                              <div>
+                                <dt>
+                                  {t(
+                                    L(
+                                      "Selected public price rules",
+                                      "Chaguzi za viwango vya umma",
+                                    ),
+                                  )}
+                                </dt>
+                                <dd>
+                                  {data.pricingSelections
+                                    .map(
+                                      (item) =>
+                                        `${item.ruleId} × ${item.quantity}`,
+                                    )
+                                    .join("; ")}{" "}
+                                  —{" "}
+                                  {t(
+                                    L(
+                                      "subject to staff review",
+                                      "vinahitaji mapitio ya timu",
+                                    ),
+                                  )}
+                                </dd>
+                              </div>
+                            )}
+                            <div>
                               <dt>{t(L("Preferred date", "Tarehe"))}</dt>
                               <dd>
                                 {data.dateFlexible
@@ -1151,6 +1841,31 @@ export function QuotationPage({
                                   t(L("To be discussed", "Kujadiliwa"))}
                               </dd>
                             </div>
+                            {serviceDetailRows(data).map(([label, value]) => (
+                              <div key={label}>
+                                <dt>{label}</dt>
+                                <dd>{value}</dd>
+                              </div>
+                            ))}
+                            {data.additionalServices.length > 0 && (
+                              <div>
+                                <dt>
+                                  {t(
+                                    L("Additional divisions", "Idara za ziada"),
+                                  )}
+                                </dt>
+                                <dd>
+                                  {data.additionalServices
+                                    .map(
+                                      (slug) =>
+                                        services.find(
+                                          (service) => service.slug === slug,
+                                        )?.title.en || slug,
+                                    )
+                                    .join(", ")}
+                                </dd>
+                              </div>
+                            )}
                             {data.eventType && (
                               <div>
                                 <dt>{t(L("Occasion", "Aina ya tukio"))}</dt>
@@ -1389,7 +2104,13 @@ export function QuotationPage({
 }
 
 export function ContactForm() {
-  const { t } = useSite();
+  const {
+    t,
+    language,
+    catalog: services,
+    profile: company,
+    content,
+  } = useSite();
   const [data, setData] = useState<RequestData>({
     ...empty,
     service: "contact",
@@ -1397,10 +2118,13 @@ export function ContactForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const submissionKey = useRef<string>("");
+  const [previewClaimPath, setPreviewClaimPath] = useState("");
   const [reference, setReference] = useState("");
   const [deliveryStatus, setDeliveryStatus] =
     useState<InquiryDeliveryStatus>("saved_for_review");
   const set = (key: keyof RequestData, value: string | boolean) => {
+    submissionKey.current = "";
     setData((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
@@ -1430,10 +2154,14 @@ export function ContactForm() {
     setBusy(true);
     setError("");
     try {
+      if (!submissionKey.current) submissionKey.current = crypto.randomUUID();
       const res = await fetch("/api/inquiries", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload(data, "contact")),
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": submissionKey.current,
+        },
+        body: JSON.stringify({ ...payload(data, "contact"), language }),
       });
       const body = await res.json();
       if (!res.ok) {
@@ -1442,6 +2170,7 @@ export function ContactForm() {
       }
       setDeliveryStatus(body.deliveryStatus);
       setReference(body.reference);
+      setPreviewClaimPath(body.previewClaimPath || "");
     } catch {
       setError(
         t(
@@ -1461,6 +2190,7 @@ export function ContactForm() {
         reference={reference}
         data={data}
         deliveryStatus={deliveryStatus}
+        previewClaimPath={previewClaimPath}
         compact
       />
     );

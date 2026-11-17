@@ -24,6 +24,8 @@ import {
 } from "@/lib/inquiry";
 import { Logo } from "./site-shell";
 
+import { serviceDetailRows } from "@/lib/service-fields";
+
 const labels: Record<InquiryStatus, string> = {
   new: "New",
   in_review: "In review",
@@ -193,6 +195,8 @@ export function StaffInbox() {
         "Preferred date",
         "Guests",
         "Message",
+        "Additional divisions",
+        "Division-specific requirements",
       ],
       ...visible.map((r) => [
         r.reference,
@@ -207,6 +211,10 @@ export function StaffInbox() {
         r.dateFlexible ? "To be confirmed" : r.eventDate,
         r.guestCount,
         r.message,
+        r.additionalServices?.map(serviceName).join("; "),
+        serviceDetailRows(r)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("; "),
       ]),
     ];
     const url = URL.createObjectURL(
@@ -584,7 +592,7 @@ export function StaffInbox() {
               )}
             </div>
             <div className="staff-detail-section">
-              <h3>The occasion</h3>
+              <h3>The request</h3>
               <dl>
                 {[
                   ["Service", serviceName(active.service)],
@@ -597,6 +605,12 @@ export function StaffInbox() {
                   ["Guest count", active.guestCount || "To be discussed"],
                   ["Serving style", active.serviceStyle || "Not specified"],
                   ["Budget guidance", active.budget || "To be discussed"],
+                  [
+                    "Additional divisions",
+                    active.additionalServices?.map(serviceName).join(", ") ||
+                      "None",
+                  ],
+                  ...serviceDetailRows(active),
                 ].map(([key, value]) => (
                   <div key={key}>
                     <dt>{key}</dt>

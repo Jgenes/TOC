@@ -1,0 +1,26 @@
+# EXAMPLE ONLY. Review paths, Node location, user and secrets on the chosen host.
+[Unit]
+Description=TOC website and business platform
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=toc
+Group=toc
+WorkingDirectory=/srv/toc/current
+EnvironmentFile=/etc/toc/toc.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# .next/cache must be writable if Next runtime image/cache features are enabled.
+ReadWritePaths=/var/lib/toc /srv/toc/current/.next/cache
+
+[Install]
+WantedBy=multi-user.target

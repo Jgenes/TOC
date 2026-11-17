@@ -86,7 +86,14 @@ try {
           page.getByRole("button", { name: "Continue", exact: true }).click();
         await next();
         await page.locator("#quote-location").fill("Synthetic Dodoma venue");
+        await page.locator("#quote-region").selectOption("Dodoma");
+        await page.locator("#quote-eventType").selectOption("Corporate event");
+        await page.locator("#quote-guestCount").fill("100");
         await next();
+        await page
+          .getByLabel("Menu guidance requested", { exact: true })
+          .check();
+        await page.locator("#quote-serviceStyle").selectOption("discuss");
         await next();
         await page.locator("#quote-name").fill("Synthetic UI Customer");
         await page.locator("#quote-email").fill("ui-customer@example.test");

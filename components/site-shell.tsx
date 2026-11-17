@@ -25,6 +25,8 @@ import {
   MessageCircle,
   Phone,
   Send,
+  Sparkles,
+  Monitor,
   UtensilsCrossed,
   X,
 } from "lucide-react";
@@ -35,27 +37,63 @@ import {
   services,
   type Language,
   type Localized,
+  type Service,
 } from "@/lib/content";
 
+export type PublicRecord = {
+  id: string;
+  type: string;
+  slug: string;
+  data: Record<string, unknown>;
+  publishedAt: string;
+};
+export type SiteData = {
+  catalog: Service[];
+  profile: typeof company;
+  content: PublicRecord[];
+};
+const defaultSite: SiteData = {
+  catalog: services,
+  profile: company,
+  content: [],
+};
+
 const SiteContext = createContext<{
+  catalog: Service[];
+  profile: typeof company;
+  content: PublicRecord[];
   language: Language;
   setLanguage: (l: Language) => void;
   t: (v: Localized) => string;
-}>({ language: "en", setLanguage: () => {}, t: (v) => v.en });
+}>({ ...defaultSite, language: "en", setLanguage: () => {}, t: (v) => v.en });
 export const useSite = () => useContext(SiteContext);
-export function SiteProvider({ children }: { children: ReactNode }) {
+export function SiteProvider({
+  children,
+  initialData = defaultSite,
+}: {
+  children: ReactNode;
+  initialData?: SiteData;
+}) {
   const [language, setLanguage] = useState<Language>("en");
   useEffect(() => {
-    const saved = localStorage.getItem("toc-language");
-    if (saved === "sw") setLanguage("sw");
+    try {
+      const saved = localStorage.getItem("toc-language");
+      if (saved === "sw") setLanguage("sw");
+    } catch {
+      /* Storage can be disabled; language switching still works for this page. */
+    }
   }, []);
   useEffect(() => {
     document.documentElement.lang = language;
-    localStorage.setItem("toc-language", language);
+    try {
+      localStorage.setItem("toc-language", language);
+    } catch {
+      /* Optional preference only. */
+    }
   }, [language]);
   return (
     <SiteContext.Provider
-      value={{ language, setLanguage, t: (v) => v[language] }}
+      value={{ ...initialData, language, setLanguage, t: (v) => v[language] }}
     >
       {children}
     </SiteContext.Provider>
@@ -115,6 +153,8 @@ export const serviceIcons = {
   calendar: CalendarDays,
   utensils: UtensilsCrossed,
   audio: AudioLines,
+  sparkles: Sparkles,
+  monitor: Monitor,
 };
 export function ButtonLink({
   href,
@@ -151,7 +191,7 @@ export function Eyebrow({
   );
 }
 export function Breadcrumb({ current }: { current: string }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company } = useSite();
   return (
     <nav aria-label="Breadcrumb" className="breadcrumb">
       <Link href="/">{t(L("Home", "Mwanzo"))}</Link>
@@ -162,11 +202,23 @@ export function Breadcrumb({ current }: { current: string }) {
 }
 
 export function Header() {
-  const { t, language, setLanguage } = useSite();
+  const {
+    t,
+    language,
+    setLanguage,
+    catalog: services,
+    profile: company,
+    content,
+  } = useSite();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileTrigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (open)
+      document.querySelector<HTMLElement>("#mobile-navigation a")?.focus();
+  }, [open]);
   useEffect(() => {
     setOpen(false);
     setServicesOpen(false);
@@ -181,6 +233,13 @@ export function Header() {
     };
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        if (document.getElementById("mobile-navigation"))
+          mobileTrigger.current?.focus();
+        else if (
+          document.activeElement &&
+          dropdownRef.current?.contains(document.activeElement)
+        )
+          dropdownRef.current.querySelector("button")?.focus();
         setOpen(false);
         setServicesOpen(false);
       }
@@ -192,10 +251,23 @@ export function Header() {
       document.removeEventListener("keydown", key);
     };
   }, []);
-  const nav = [
+  type NavItem = { href: string; label: Localized };
+  const navigation = content.find(
+    (item) => item.type === "navigation" && item.slug === "primary",
+  )?.data as { items?: NavItem[]; footerItems?: NavItem[] } | undefined;
+  const nav = navigation?.items || [
     { href: "/", label: L("Home", "Mwanzo") },
     { href: "/about", label: L("About TOC", "Kuhusu TOC") },
+    { href: "/services", label: L("Our services", "Huduma zetu") },
+    { href: "/projects", label: L("Projects", "Miradi") },
+    { href: "/clients", label: L("Clients", "Wateja") },
+    { href: "/news", label: L("News", "Habari") },
+    { href: "/contact", label: L("Contact", "Mawasiliano") },
   ];
+  const active = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(href + "/");
   return (
     <>
       <div className="topbar">
@@ -229,83 +301,76 @@ export function Header() {
             aria-label={t(L("Main navigation", "Urambazaji mkuu"))}
             className="desktop-nav"
           >
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={
-                  pathname === item.href ? "nav-link active" : "nav-link"
-                }
-                aria-current={pathname === item.href ? "page" : undefined}
-              >
-                {t(item.label)}
-              </Link>
-            ))}
-            <div className="nav-dropdown-wrap" ref={dropdownRef}>
-              <button
-                className={`nav-link${pathname.startsWith("/services") ? " active" : ""}`}
-                onClick={() => setServicesOpen(!servicesOpen)}
-                aria-expanded={servicesOpen}
-                aria-controls="services-dropdown"
-              >
-                {t(L("Our services", "Huduma zetu"))}
-                <ChevronDown
-                  size={13}
-                  className={servicesOpen ? "rotate-180" : ""}
-                />
-              </button>
-              {servicesOpen && (
-                <div id="services-dropdown" className="services-dropdown">
-                  <div className="dropdown-heading">
-                    {t(
-                      L(
-                        "Thoughtfully coordinated. Beautifully delivered.",
-                        "Uratibu makini. Utekelezaji mzuri.",
-                      ),
-                    )}
-                  </div>
-                  {services.map((service) => {
-                    const Icon = serviceIcons[service.icon];
-                    return (
+            {nav.map((item) =>
+              item.href === "/services" ? (
+                <div
+                  key={item.href}
+                  className="nav-dropdown-wrap"
+                  ref={dropdownRef}
+                >
+                  <button
+                    className={`nav-link${pathname.startsWith("/services") ? " active" : ""}`}
+                    onClick={() => setServicesOpen(!servicesOpen)}
+                    aria-expanded={servicesOpen}
+                    aria-controls="services-dropdown"
+                  >
+                    {t(item.label)}
+                    <ChevronDown
+                      size={13}
+                      className={servicesOpen ? "rotate-180" : ""}
+                    />
+                  </button>
+                  {servicesOpen && (
+                    <div id="services-dropdown" className="services-dropdown">
+                      <div className="dropdown-heading">
+                        {t(
+                          L(
+                            "Thoughtfully coordinated. Beautifully delivered.",
+                            "Uratibu makini. Utekelezaji mzuri.",
+                          ),
+                        )}
+                      </div>
+                      {services.map((service) => {
+                        const Icon = serviceIcons[service.icon];
+                        return (
+                          <Link
+                            key={service.slug}
+                            href={`/services/${service.slug}`}
+                            onClick={() => setServicesOpen(false)}
+                          >
+                            <span className="dropdown-icon">
+                              <Icon size={20} />
+                            </span>
+                            <span>
+                              <strong>{t(service.title)}</strong>
+                              <small>{t(service.tags[0])}</small>
+                            </span>
+                            <ArrowUpRight size={17} />
+                          </Link>
+                        );
+                      })}
                       <Link
-                        key={service.slug}
-                        href={`/services/${service.slug}`}
+                        className="all-services-link"
+                        href="/services"
                         onClick={() => setServicesOpen(false)}
                       >
-                        <span className="dropdown-icon">
-                          <Icon size={20} />
-                        </span>
-                        <span>
-                          <strong>{t(service.title)}</strong>
-                          <small>{t(service.tags[0])}</small>
-                        </span>
-                        <ArrowUpRight size={17} />
+                        {t(L("Explore all services", "Tazama huduma zote"))}
+                        <ArrowRight size={16} />
                       </Link>
-                    );
-                  })}
-                  <Link
-                    className="all-services-link"
-                    href="/services"
-                    onClick={() => setServicesOpen(false)}
-                  >
-                    {t(L("Explore all services", "Tazama huduma zote"))}
-                    <ArrowRight size={16} />
-                  </Link>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <Link
-              href="/gallery"
-              className={`nav-link${pathname === "/gallery" ? " active" : ""}`}
-            >
-              {t(L("Gallery", "Picha"))}
-            </Link>
-            <Link
-              href="/contact"
-              className={`nav-link${pathname === "/contact" ? " active" : ""}`}
-            >
-              {t(L("Contact", "Mawasiliano"))}
-            </Link>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-link${active(item.href) ? " active" : ""}`}
+                  aria-current={active(item.href) ? "page" : undefined}
+                >
+                  {t(item.label)}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="header-actions">
             <div className="language-switch" aria-label="Website language">
@@ -331,6 +396,7 @@ export function Header() {
               {t(L("Request a quotation", "Omba bei"))}
             </ButtonLink>
             <button
+              ref={mobileTrigger}
               className="mobile-menu-button"
               aria-label={open ? "Close navigation" : "Open navigation"}
               aria-expanded={open}
@@ -349,13 +415,19 @@ export function Header() {
           >
             {[
               ...nav,
-              { href: "/services", label: L("Our services", "Huduma zetu") },
               ...services.map((s) => ({
                 href: `/services/${s.slug}`,
                 label: s.title,
               })),
-              { href: "/gallery", label: L("Gallery", "Picha") },
-              { href: "/contact", label: L("Contact", "Mawasiliano") },
+              ...(
+                navigation?.footerItems || [
+                  { href: "/gallery", label: L("Gallery", "Picha") },
+                  {
+                    href: "/portal",
+                    label: L("Customer portal", "Mlango wa mteja"),
+                  },
+                ]
+              ).filter((item) => !nav.some((link) => link.href === item.href)),
             ].map((item) => (
               <Link
                 key={item.href}
@@ -378,7 +450,7 @@ export function Header() {
 }
 
 export function ClosingCTA() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company } = useSite();
   return (
     <section className="closing-cta">
       <div className="container closing-cta-inner">
@@ -422,7 +494,22 @@ export function ClosingCTA() {
 }
 
 export function Footer() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
+  const footerLinks = (content.find(
+    (item) => item.type === "navigation" && item.slug === "primary",
+  )?.data.footerItems as { href: string; label: Localized }[] | undefined) || [
+    {
+      href: "/about",
+      label: L("Our story & approach", "Hadithi na mbinu zetu"),
+    },
+    { href: "/gallery", label: L("Gallery", "Picha") },
+    { href: "/projects", label: L("Projects", "Miradi") },
+    { href: "/clients", label: L("Clients", "Wateja") },
+    { href: "/news", label: L("News", "Habari") },
+    { href: "/careers", label: L("Careers", "Ajira") },
+    { href: "/downloads", label: L("Company documents", "Nyaraka za kampuni") },
+    { href: "/portal", label: L("Customer portal", "Mlango wa mteja") },
+  ];
   return (
     <footer className="site-footer">
       <div className="container">
@@ -434,8 +521,8 @@ export function Footer() {
             <p>
               {t(
                 L(
-                  "Exceptional events. Thoughtful catering. A touch of class, from start to finish.",
-                  "Hafla bora. Upishi makini. Mguso wa ubora, mwanzo hadi mwisho.",
+                  "Events, catering, cleaning, ICT and production. A touch of class, from start to finish.",
+                  "Hafla, upishi, usafi, TEHAMA na uzalishaji. Mguso wa ubora, mwanzo hadi mwisho.",
                 ),
               )}
             </p>
@@ -462,18 +549,11 @@ export function Footer() {
           </div>
           <div>
             <h3>{t(L("Explore TOC", "Fahamu TOC"))}</h3>
-            <Link href="/about">
-              {t(L("Our story & approach", "Hadithi na mbinu zetu"))}
-            </Link>
-            <Link href="/gallery">
-              {t(L("Visual inspiration", "Msukumo wa picha"))}
-            </Link>
-            <Link href="/request-quotation">
-              {t(L("Request a quotation", "Omba bei"))}
-            </Link>
-            <Link href="/contact">
-              {t(L("Get in touch", "Wasiliana nasi"))}
-            </Link>
+            {footerLinks.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {t(item.label)}
+              </Link>
+            ))}
           </div>
           <div className="footer-contact">
             <h3>{t(L("Let’s talk", "Tuzungumze"))}</h3>
@@ -489,6 +569,28 @@ export function Footer() {
               <MapPin size={15} />
               {company.location}
             </span>
+            {company.whatsapp && (
+              <a
+                href={`https://wa.me/${company.whatsapp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t(
+                  L("Contact TOC by WhatsApp", "Wasiliana na TOC kwa WhatsApp"),
+                )}{" "}
+                ↗
+              </a>
+            )}
+            {company.social?.map((item) => (
+              <a
+                key={item.url}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.label} ↗
+              </a>
+            ))}
           </div>
         </div>
         <div className="footer-bottom">
@@ -498,7 +600,7 @@ export function Footer() {
           <div>
             <Link href="/privacy">{t(L("Privacy", "Faragha"))}</Link>
             <Link href="/terms">{t(L("Terms of use", "Masharti"))}</Link>
-            <Link href="/staff">{t(L("Staff access", "Wafanyakazi"))}</Link>
+            <Link href="/admin">{t(L("Staff access", "Wafanyakazi"))}</Link>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               aria-label="Back to top"
@@ -523,9 +625,17 @@ export function Footer() {
 }
 
 export function ServiceGuide() {
-  const { t, language } = useSite();
+  const { t, language, catalog: services, profile: company } = useSite();
   const [open, setOpen] = useState(false);
   const [answer, setAnswer] = useState<number | null>(null);
+  const [question, setQuestion] = useState("");
+  const [assistantResult, setAssistantResult] = useState<{
+    answer: string;
+    aiUsed: boolean;
+    sources?: { id: string; title: string; href: string }[];
+  } | null>(null);
+  const [assistantBusy, setAssistantBusy] = useState(false);
+  const [assistantError, setAssistantError] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -535,8 +645,8 @@ export function ServiceGuide() {
     {
       q: L("Which service do I need?", "Nahitaji huduma gani?"),
       a: L(
-        "Planning an occasion? Start with Event management. Need meals, refreshments or a buffet? Choose Catering. For sound, lighting or event media, choose Entertainment & production. You can combine requirements in one request.",
-        "Unapanga tukio? Anza na Usimamizi wa hafla. Unahitaji chakula, viburudisho au bafe? Chagua Upishi. Kwa sauti, mwanga au picha, chagua Burudani na uzalishaji. Unaweza kuchanganya mahitaji katika ombi moja.",
+        "Planning an occasion? Start with Event management. Need meals, refreshments or a buffet? Choose Catering. For workplaces and facility care, choose Cleaning. For websites, networks or technical support, choose ICT. For sound, lighting or event media, choose Entertainment & production. You can combine requirements in one request.",
+        "Unapanga tukio? Anza na Usimamizi wa hafla. Unahitaji chakula, viburudisho au bafe? Chagua Upishi. Kwa majengo, chagua Usafi. Kwa tovuti, mitandao au msaada wa kiufundi, chagua TEHAMA. Kwa sauti, mwanga au picha, chagua Burudani na uzalishaji. Unaweza kuchanganya mahitaji katika ombi moja.",
       ),
     },
     {
@@ -621,6 +731,104 @@ export function ServiceGuide() {
                 {t(questions[answer].a)}
               </div>
             )}
+            <form
+              className="guide-question-input"
+              onSubmit={async (event) => {
+                event.preventDefault();
+                if (assistantBusy) return;
+                setAssistantBusy(true);
+                setAssistantError("");
+                try {
+                  const response = await fetch("/api/platform/assistant", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      module: "chat",
+                      text: question,
+                      language,
+                    }),
+                  });
+                  const body = await response.json();
+                  if (!response.ok)
+                    throw new Error(body.error || "The guide is unavailable.");
+                  setAssistantResult(body);
+                } catch (error) {
+                  setAssistantError(
+                    error instanceof Error
+                      ? error.message
+                      : "Please contact the team.",
+                  );
+                } finally {
+                  setAssistantBusy(false);
+                }
+              }}
+            >
+              <label htmlFor="toc-guide-question">
+                {t(L("Ask about a service", "Uliza kuhusu huduma"))}
+              </label>
+              <textarea
+                id="toc-guide-question"
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                maxLength={1500}
+                minLength={2}
+                required
+                placeholder={t(
+                  L(
+                    "No personal details, passwords or keys",
+                    "Usiweke taarifa binafsi, nywila au funguo",
+                  ),
+                )}
+              />
+              <button
+                className="platform-small-button"
+                disabled={assistantBusy}
+                type="submit"
+              >
+                {assistantBusy
+                  ? t(
+                      L(
+                        "Checking published information…",
+                        "Tunapitia taarifa zilizochapishwa…",
+                      ),
+                    )
+                  : t(
+                      L(
+                        "Find approved guidance",
+                        "Tafuta mwongozo ulioidhinishwa",
+                      ),
+                    )}
+              </button>
+            </form>
+            {assistantError && <p role="alert">{assistantError}</p>}
+            {assistantResult && (
+              <div
+                className="guide-answer guide-dynamic-answer"
+                aria-live="polite"
+              >
+                <small>
+                  {assistantResult.aiUsed
+                    ? t(
+                        L(
+                          "AI-selected approved excerpts",
+                          "Maelezo yaliyoidhinishwa yaliyochaguliwa na AI",
+                        ),
+                      )
+                    : t(
+                        L(
+                          "Published-content guide · not AI",
+                          "Mwongozo wa maudhui yaliyochapishwa · si AI",
+                        ),
+                      )}
+                </small>
+                <p>{assistantResult.answer}</p>
+                {assistantResult.sources?.map((source) => (
+                  <Link key={source.id} href={source.href}>
+                    {source.title} →
+                  </Link>
+                ))}
+              </div>
+            )}
             <ButtonLink href="/request-quotation" className="guide-cta">
               {t(L("Start a request", "Anza ombi"))}
             </ButtonLink>
@@ -670,7 +878,10 @@ export function ServiceGuide() {
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const path = usePathname();
-  const staff = path.startsWith("/staff");
+  const staff =
+    path.startsWith("/staff") ||
+    path.startsWith("/admin") ||
+    path.startsWith("/portal");
   return (
     <>
       <a className="skip-link" href="#main">

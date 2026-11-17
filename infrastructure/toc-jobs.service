@@ -1,0 +1,21 @@
+# Shares the same private persistent database/storage/environment as toc-web.
+[Unit]
+Description=TOC scheduled publishing, notifications, reminders and file scanning
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=toc
+Group=toc
+WorkingDirectory=/srv/toc/current
+EnvironmentFile=/etc/toc/toc.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm run jobs:run
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/toc
+TimeoutStartSec=10min

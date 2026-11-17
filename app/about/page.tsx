@@ -1,9 +1,15 @@
 import { AboutPage } from "@/components/pages";
-export const metadata = {
-  title: "About TOC",
-  description:
-    "Meet Touch of Class: a Tanzanian company bringing events, catering and hospitality together with a considered, personal approach.",
-};
+import { ContentDetail } from "@/components/public-content";
+import { publicPage, publicPageMetadata } from "@/lib/public-pages";
+export function generateMetadata() {
+  return publicPageMetadata("about", {
+    title: "About TOC",
+    description:
+      "Five coordinated professional service divisions: events, catering, cleaning, ICT and production.",
+    alternates: { canonical: "/about" },
+  });
+}
 export default function Page() {
-  return <AboutPage />;
+  const item = publicPage("about");
+  return item ? <ContentDetail item={item} /> : <AboutPage />;
 }

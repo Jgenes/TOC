@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, chmodSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
 import {
@@ -17,8 +17,9 @@ export function database() {
     /* turbopackIgnore: true */ process.cwd(),
     process.env.DATABASE_PATH || "data/toc.sqlite",
   );
-  mkdirSync(dirname(path), { recursive: true });
+  mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
   instance = new Database(path);
+  chmodSync(path, 0o600);
   instance.pragma("journal_mode = WAL");
   instance.pragma("foreign_keys = ON");
   instance.pragma("busy_timeout = 5000");
@@ -65,11 +66,15 @@ export function saveInquiry(input: Inquiry) {
   })();
   return { id, reference, createdAt: now };
 }
-export function listInquiries(): StoredInquiry[] {
+export function listInquiries(limit: number | null = 1000): StoredInquiry[] {
   return (
     database()
-      .prepare("SELECT * FROM inquiries ORDER BY created_at DESC LIMIT 1000")
-      .all() as Row[]
+      .prepare(
+        `SELECT * FROM inquiries ORDER BY created_at DESC ${limit === null ? "" : "LIMIT ?"}`,
+      )
+      .all(
+        ...(limit === null ? [] : [Math.min(1000, Math.max(1, limit))]),
+      ) as Row[]
   ).map(mapRow);
 }
 export function changeInquiryStatus(id: string, next: InquiryStatus) {

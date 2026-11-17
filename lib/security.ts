@@ -26,6 +26,7 @@ export function rateLimit(
       if (value.until <= now) limits.delete(key);
   const hit = limits.get(key);
   if (!hit || hit.until <= now) {
+    if (!hit && limits.size >= 10000) return false;
     limits.set(key, { count: 1, until: now + windowMs });
     return true;
   }
@@ -34,6 +35,7 @@ export function rateLimit(
   return true;
 }
 export function safeOrigin(request: NextRequest) {
+  if (request.headers.get("sec-fetch-site") === "cross-site") return false;
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {
@@ -128,5 +130,6 @@ export function validStaffSession(value?: string) {
   }
 }
 export const authenticated = (request: NextRequest) =>
+  process.env.NEXT_PUBLIC_PREVIEW_MODE !== "false" &&
   validStaffSession(request.cookies.get(STAFF_COOKIE)?.value);
 export const privateHeaders = { "Cache-Control": "no-store, private" };

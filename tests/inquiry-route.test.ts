@@ -74,6 +74,25 @@ test("contact submission is persisted before its email is sent", async (t) => {
         .find((row) => row.email === contact.email);
       assert.ok(saved, "Inquiry must already be durable when SMTP starts");
       assert.ok(String(mail.text).includes(saved.reference));
+      const queued = database
+        .database()
+        .prepare(
+          "SELECT state,attempts,reply_to,next_attempt_at FROM notification_outbox WHERE dedup_key=?",
+        )
+        .get(`staff-inquiry:${saved.id}`) as {
+        state: string;
+        attempts: number;
+        reply_to: string;
+        next_attempt_at: number;
+      };
+      assert.equal(queued.state, "sending");
+      assert.equal(queued.attempts, 1);
+      assert.equal(queued.reply_to, contact.email);
+      assert.ok(queued.next_attempt_at > Date.now());
+      assert.match(
+        String(mail.messageId),
+        /^<[a-f0-9]{64}@tocinvestment\.co\.tz>$/,
+      );
       sent = mail;
       return { accepted: [recipient] };
     },
@@ -98,7 +117,9 @@ test("quotation submissions use the same automatic notification path", async (t)
     origin: "quotation",
     service: "event-management",
     phone: "+255 700 000 001",
-    eventType: "Conference",
+    eventType: "Conference or workshop",
+    region: "Dodoma",
+    cateringRequired: "no",
     location: "Synthetic Dodoma venue",
     guestCount: 90,
     dateFlexible: true,
@@ -140,6 +161,22 @@ test("SMTP failure returns the saved reference, not an error that invites resubm
   assert.ok(
     database.listInquiries().some((row) => row.reference === body.reference),
   );
+  const failed = database
+    .listInquiries()
+    .find((row) => row.reference === body.reference)!;
+  const queued = database
+    .database()
+    .prepare(
+      "SELECT state,attempts,reply_to FROM notification_outbox WHERE dedup_key=?",
+    )
+    .get(`staff-inquiry:${failed.id}`) as {
+    state: string;
+    attempts: number;
+    reply_to: string;
+  };
+  assert.equal(queued.state, "retry");
+  assert.equal(queued.attempts, 1);
+  assert.equal(queued.reply_to, contact.email);
   assert.equal(body.error, undefined);
   assert.ok(!JSON.stringify(body).includes(process.env.SMTP_PASS!));
   assert.ok(!JSON.stringify(log.mock.calls).includes(contact.email));

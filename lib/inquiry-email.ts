@@ -8,6 +8,8 @@ import { z } from "zod";
 import { company, isPreview, services } from "./content";
 import type { Inquiry, InquiryDeliveryStatus, StoredInquiry } from "./inquiry";
 
+import { serviceDetailRows } from "./service-fields";
+
 type Receipt = Pick<StoredInquiry, "reference" | "createdAt">;
 type MailTransport = {
   sendMail(
@@ -15,6 +17,7 @@ type MailTransport = {
   ): Promise<Pick<SMTPSentMessageInfo, "accepted">>;
 };
 type DeliveryOptions = {
+  messageId?: string;
   preview?: boolean;
   environment?: Readonly<Record<string, string | undefined>>;
   createTransport?: (config: SMTPTransportOptions) => MailTransport;
@@ -54,7 +57,9 @@ export function buildInquiryEmail(
     "",
     `Reference: ${receipt.reference}`,
     `Submitted (UTC): ${receipt.createdAt}`,
-    `Form: ${inquiry.origin}`,
+    `Form: ${inquiry.origin} · schema ${inquiry.schemaVersion} · language ${inquiry.language}`,
+    `Privacy notice acknowledged: ${inquiry.privacyNoticeVersion}`,
+    `Self-reported source: ${inquiry.leadSource || "Not supplied"}`,
     `Service: ${service}`,
     "",
     "CONTACT DETAILS",
@@ -68,11 +73,17 @@ export function buildInquiryEmail(
     `Preferred date: ${inquiry.eventDate || "To be confirmed"}`,
     `Date flexible / to be confirmed: ${inquiry.dateFlexible ? "Yes" : "No"}`,
     `Location: ${inquiry.location || "Not supplied"}`,
+    `Region: ${inquiry.region || "Not supplied"}`,
+    `Alternative date: ${inquiry.alternativeDate || "Not supplied"}`,
     `Guests: ${inquiry.guestCount ?? "To be discussed"}`,
     `Preferences: ${inquiry.preferences.join(", ") || "None supplied"}`,
     `Serving style: ${inquiry.serviceStyle || "To be discussed"}`,
     `Dietary requirements: ${inquiry.dietary || "None supplied"}`,
     `Budget: ${inquiry.budget || "To be discussed"}`,
+    `Selected public rule references (not accepted prices): ${inquiry.pricingSelections.map((item) => `${item.bookId}:${item.ruleId} x ${item.quantity}`).join("; ") || "None"}`,
+    "",
+    `Additional divisions: ${inquiry.additionalServices?.join(", ") || "None"}`,
+    ...serviceDetailRows(inquiry).map(([label, value]) => `${label}: ${value}`),
     "",
     "MESSAGE",
     inquiry.message || "No message supplied.",
@@ -138,9 +149,10 @@ export async function notifyInquiry(
       disableFileAccess: true,
       disableUrlAccess: true,
     });
-    const result = await transport.sendMail(
-      buildInquiryEmail(inquiry, receipt, config.SMTP_USER),
-    );
+    const result = await transport.sendMail({
+      ...buildInquiryEmail(inquiry, receipt, config.SMTP_USER),
+      ...(options.messageId ? { messageId: options.messageId } : {}),
+    });
     const accepted = result.accepted.some(
       (recipient) => recipient.toLowerCase() === company.email.toLowerCase(),
     );
