@@ -5,7 +5,7 @@
 ## Business and editorial approval
 
 - [ ] TOC approves the legal/display name and the vector interpretation of its logo, or supplies official vector logo files.
-- [ ] Verify +255 677 677 703, +255 755 439 072 and touchofclassinvestment@gmail.com; confirm current office location and directions.
+- [ ] Verify +255 677 677 703 and +255 755 439 072; confirm the owner-supplied info@tocinvestment.co.tz mailbox and current office location/directions.
 - [ ] Reconcile P.O. Box 1249 vs the ambiguous 41217 postal wording. Do not publish either as a verified box until resolved.
 - [ ] Verify BRELA, TIN and licence details against current certificates before publishing them.
 - [ ] Approve service scope and the wording for entertainment/production. Confirm owned, rented and subcontracted resources without implying all equipment is TOC-owned.
@@ -39,7 +39,9 @@
 
 - [ ] Select and approve a domain, hosting plan and operational owner.
 - [ ] Use a persistent single Node server for the SQLite MVP, or migrate to PostgreSQL for multi-instance hosting.
-- [ ] Connect and test a transactional email service if automatic acknowledgements/staff notifications are required. Confirm delivery, failure handling and sender-domain authentication.
+- [ ] Set the private `SMTP_PASS` for info@tocinvestment.co.tz on the Node host; confirm `mail.tocinvestment.co.tz:465`, `SMTP_SECURE=true`, and preview mode off at build time/runtime. Never commit the password or expose it through `NEXT_PUBLIC_`.
+- [ ] Test contact and quotation notifications in the actual mailbox, every detail/reference, Reply-To, preview suppression, and saved-inbox fallback on SMTP failure. SMTP integration is implemented; live authentication and delivery still need verification. No automatic customer acknowledgement or background retry queue is included.
+- [ ] Confirm SPF/DKIM/DMARC with the email host, outbound SMTP access, monitoring/ownership of failures, and retention/deletion rules for email copies.
 - [ ] If WhatsApp/SMS is required, configure an approved company-controlled business account and explicit communication rules. The website currently does not send these messages.
 - [ ] Connect a publishing CMS if staff-editable public content is required; content is currently managed in source.
 - [ ] Plan the customer portal, formal quotations/approvals, booking/resource engine, payment integrations and AI separately. They are not implied by this MVP.
@@ -53,6 +55,7 @@
 - [ ] Keyboard-only navigation, focus, lightbox, menus and form errors.
 - [ ] Contrast and legibility review with the final content and media.
 - [ ] A valid service inquiry and contact message persist and receive a unique reference.
+- [ ] In production, both forms email info@tocinvestment.co.tz; success accurately distinguishes SMTP acceptance from saved-only/failed notifications without encouraging duplicate submissions.
 - [ ] Invalid dates, missing consent, invalid email, excessive payloads and bots are rejected.
 - [ ] Anonymous users cannot list or update customer inquiries.
 - [ ] A new inquiry cannot bypass initial review.

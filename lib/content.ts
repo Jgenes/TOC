@@ -5,13 +5,13 @@ export const L = (en: string, sw: string): Localized => ({ en, sw });
 export const company = {
   name: "TOC Investment Company Limited",
   brand: "Touch of Class",
-  email: "touchofclassinvestment@gmail.com",
+  email: "info@tocinvestment.co.tz",
   phone: "+255 677 677 703",
   phoneHref: "+255677677703",
   secondaryPhone: "+255 755 439 072",
   location: "Kisasa, Dodoma, Tanzania",
   source:
-    "TOC Website Blue Print.docx — corporate master-data register, section 2.2",
+    "Email supplied by TOC for the SMTP integration; other contacts from TOC Website Blue Print.docx, section 2.2",
   verified: false,
 };
 export const isPreview = process.env.NEXT_PUBLIC_PREVIEW_MODE !== "false";

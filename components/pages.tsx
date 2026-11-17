@@ -1229,13 +1229,10 @@ const legalCopy = {
         ),
       },
       {
-        title: L(
-          "How preview submissions are used",
-          "Matumizi ya taarifa za hakikisho",
-        ),
+        title: L("How inquiries are used", "Matumizi ya taarifa za maombi"),
         text: L(
-          "In preview mode, submissions are saved to the local application database for testing the inquiry workflow. They are not automatically emailed, sent to WhatsApp, or forwarded to TOC. Only authorized staff with the configured password can access the staff inbox. Please use fictional test data in this preview.",
-          "Katika hali ya hakikisho, maombi yanahifadhiwa katika hifadhidata ya programu kwa majaribio. Hayatumwi moja kwa moja kwa barua pepe, WhatsApp au TOC. Wafanyakazi wenye nenosiri lililowekwa pekee wanaweza kuona maombi. Tumia taarifa za mfano katika majaribio.",
+          `Submissions are saved in the application database for staff review. In preview mode, they are not automatically emailed or forwarded to TOC; please use fictional test data. When preview mode is off and SMTP is configured, form details are also emailed to ${company.email} for follow-up. No WhatsApp messages are sent. Only authorized staff with the configured password can access the website staff inbox. The approved retention and deletion policy must cover both database and mailbox copies.`,
+          `Maombi yanahifadhiwa katika hifadhidata kwa mapitio ya timu. Katika hali ya hakikisho, hayatumwi moja kwa moja kwa barua pepe au TOC; tumia taarifa za mfano. Hali ya hakikisho ikizimwa na SMTP ikiwekwa, taarifa za fomu pia hutumwa kwa ${company.email} kwa ufuatiliaji. Hakuna ujumbe wa WhatsApp unaotumwa. Wafanyakazi wenye nenosiri lililowekwa pekee wanaweza kuona kikasha cha tovuti. Sera iliyoidhinishwa ya kuhifadhi na kufuta taarifa lazima ihusishe hifadhidata na nakala za barua pepe.`,
         ),
       },
       {

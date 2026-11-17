@@ -10,6 +10,7 @@ A modern, responsive public website and functional inquiry MVP, built from the *
 - Accessible mobile menu, expandable FAQs, gallery keyboard navigation, Escape-to-close and focus management, reduced-motion support, form labels and validation.
 - Conditional request questions for event management, catering and related production, opt-in browser draft saving, final customer review, privacy consent, unique inquiry references, downloadable summaries and user-initiated email drafts.
 - Server-side validation, body-size limits, honeypot, origin checks, per-instance rate limiting and SQLite persistence.
+- Automatic, server-side SMTP notifications for contact and quotation forms to `info@tocinvestment.co.tz`, with truthful sending status and saved-inbox fallback.
 - Password-protected staff inbox, filters, search, CSV export with spreadsheet-formula protection, validated status transitions and an audit log.
 - Unique page metadata, social preview metadata, favicon and production sitemap/robots configuration. Preview indexing is disabled.
 
@@ -54,14 +55,43 @@ For browser checks:
 ```bash
 npx playwright install chromium
 node scripts/browser-check.mjs
+node scripts/email-browser-check.mjs
 ```
+
+Run browser checks against the local preview server. The email-status UI checks intercept form requests and exercise all four sending outcomes in English and Kiswahili without saving records or sending email. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can point that script to an existing Chromium installation.
+
+## Send form details to TOC by email
+
+Both the **Contact** and **Request a quotation** forms use `/api/inquiries`. The server validates and saves each inquiry first, then sends its details to **info@tocinvestment.co.tz** using Nodemailer and the supplied outgoing mail server. It includes the reference, submission time, contact details, event/service requirements, message and privacy consent. The authenticated mailbox is the sender; the customer's address is **Reply-To**, so staff can reply directly without spoofing the customer as the sender. Visitors cannot choose the recipient.
+
+Configure these **private server environment variables** on your hosting service, or in the ignored `.env.local` for a local deployment:
+
+```dotenv
+SMTP_HOST=mail.tocinvestment.co.tz
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=info@tocinvestment.co.tz
+SMTP_PASS=
+```
+
+Set `SMTP_PASS` to the actual email account password **only in that private environment**. Do not paste the password into chat, commit it to GitHub, put it in frontend code, or prefix it with `NEXT_PUBLIC_`. If a password contains special characters, use the hosting dashboard's secret field or correctly quote it in `.env.local`.
+
+- Port **465** uses implicit TLS with certificate validation. Do not disable certificate checks. The connection, greeting and socket have explicit timeouts.
+- IMAP **993** and POP3 **995** are for reading mail and are **not needed** for sending form details.
+- Preview mode intentionally blocks all automatic emails, even when credentials are present. After launch approval, set `NEXT_PUBLIC_PREVIEW_MODE=false` at **build time and runtime**, rebuild with `npm run build`, and restart the Node server. Simply pushing code to GitHub or changing an environment file without rebuilding/restarting does not activate delivery. GitHub Pages and the portable HTML cannot run this server-side endpoint.
+- Without `SMTP_PASS`, inquiries still save for review and the success screen explicitly says no automatic email was sent. Invalid settings, authentication failures, rejected recipients and network errors return an `email_failed` status with the saved reference, not a false sending confirmation or a prompt to submit again.
+- Email sending is awaited before the API responds. A successful status means the SMTP server accepted the notification, **not** proof of final inbox delivery. No automatic customer acknowledgement is sent.
+- There is no background retry queue. The staff inbox remains the source of truth; monitor notification failures (logs include only the inquiry reference, never raw SMTP errors or form contents) and follow up from the saved inquiry if sending fails.
+- Test both forms on the deployed server with synthetic details. Check receipt in the mailbox/spam folder, every form field and reference, Reply-To, preview blocking, and the saved-reference fallback when SMTP is unavailable. Configure the mail domain's SPF/DKIM/DMARC with the email host and include mailbox copies in the retention/deletion policy.
+
+The GitHub repository contains the integration and configuration template, **not mailbox credentials**. Live SMTP authentication/delivery must be verified from the deployment environment with the account password; no real email is sent by the automated tests.
 
 ## Important preview boundaries
 
 **This is a working website and inquiry MVP, not the entire enterprise platform described in the blueprint.**
 
 - In preview mode, forms save to this website's local database. They do **not** automatically email TOC, send SMS/WhatsApp, create a confirmed booking, or issue a priced quotation. The UI explicitly explains this. Use fictional test details.
-- The success screen can download a text summary or open an email draft. Sending that email is a separate, user-confirmed action in the user's email app.
+- The success screen can download a text summary or open an optional email draft. That draft is separate from production SMTP notifications and must be reviewed/sent in the user's email app. The production screen distinguishes a sent notification from a saved-only inquiry or sending failure.
 - The floating service guide uses preset information. It is **not** live staff chat or an AI model.
 - The staff inbox uses a single configured password and signed, eight-hour HTTP-only sessions. It is not enterprise RBAC, individual staff accounts or a full CMS.
 - Company and service content is centralized in `lib/content.ts` and edited in source. A publishing CMS is **not** connected.
@@ -76,7 +106,7 @@ The folder contained one document: **TOC Website Blue Print.docx**, approximatel
 - Core published content: event management and catering. Related entertainment/production is limited to the scope described in the profiles, with explicit staff confirmation for equipment, suppliers and availability.
 - Standalone commercial cleaning and ICT are stored as **unpublished proposals** in `lib/content.ts`. Do not publish them until management confirms operational capability.
 - No client logos, endorsements, testimonials, project metrics, founding year, certifications, prices or completed case studies were invented. Their sections are intentionally not published.
-- Contacts come from the newer-profile values in blueprint section 2.2. They are **not independently verified**. Only the unambiguous general location, Kisasa, Dodoma, is shown. Conflicting postal-box numbers and legal identifiers were withheld.
+- The company email, `info@tocinvestment.co.tz`, and SMTP settings were supplied by the owner for this integration. Telephone/location details come from the newer-profile values in blueprint section 2.2 and are **not independently verified**. Only the unambiguous general location, Kisasa, Dodoma, is shown. Conflicting postal-box numbers and legal identifiers were withheld.
 - No WhatsApp link was added because a company-controlled WhatsApp number was not confirmed.
 - The wordmark is a clean vector interpretation of the identity in the blueprint's UI reference. Obtain approval or replace it with the official logo before launch.
 - Public copy and Kiswahili translations are editorial drafts for TOC's review.
@@ -116,6 +146,6 @@ Manrope and Inter are hosted locally. Their SIL Open Font License texts are incl
 
 ## Before launch
 
-Use `LAUNCH-CHECKLIST.md`. Keep `NEXT_PUBLIC_PREVIEW_MODE=true` until the business has approved content, contact information, policies and media. Setting the flag to false does **not** activate email notifications or any other integration.
+Use `LAUNCH-CHECKLIST.md`. Keep `NEXT_PUBLIC_PREVIEW_MODE=true` until the business has approved content, contact information, policies and media. Automatic form email requires **both** preview mode off and private SMTP credentials as described above; other integrations are not activated by this flag.
 
-Set the approved `NEXT_PUBLIC_SITE_URL` and rebuild after final domain approval. Provision HTTPS, persistent storage, backups, new secrets, individual staff authentication, transactional notifications and an agreed operating process before receiving real customer data.
+Set the approved `NEXT_PUBLIC_SITE_URL` and rebuild after final domain approval. Provision HTTPS, persistent storage, backups, new secrets, individual staff authentication, verified SMTP notifications and an agreed operating process before receiving real customer data.

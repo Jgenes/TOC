@@ -14,6 +14,8 @@ export const inquiryStatuses = [
   "closed",
 ] as const;
 export type InquiryStatus = (typeof inquiryStatuses)[number];
+export type InquiryDeliveryStatus =
+  "preview_local_only" | "saved_for_review" | "email_sent" | "email_failed";
 
 export function todayInTanzania() {
   const parts = new Intl.DateTimeFormat("en-CA", {

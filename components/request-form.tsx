@@ -28,7 +28,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { company, isPreview, L, services } from "@/lib/content";
-import { todayInTanzania } from "@/lib/inquiry";
+import { todayInTanzania, type InquiryDeliveryStatus } from "@/lib/inquiry";
 import {
   Breadcrumb,
   ButtonLink,
@@ -169,16 +169,20 @@ function HoneyPot({
 export function SuccessPanel({
   reference,
   data,
+  deliveryStatus,
   compact = false,
 }: {
   reference: string;
   data: RequestData;
+  deliveryStatus: InquiryDeliveryStatus;
   compact?: boolean;
 }) {
   const { t } = useSite();
   const [copied, setCopied] = useState(false);
+  const previewOnly = deliveryStatus === "preview_local_only";
+  const emailSent = deliveryStatus === "email_sent";
   const service = services.find((s) => s.slug === data.service);
-  const summary = `${company.name}\nInquiry reference: ${reference}\nService: ${service?.title.en || (data.service === "contact" ? "General inquiry" : "Help choosing a service")}\nName: ${data.name}\nOrganization: ${data.organization || "Not specified"}\nEmail: ${data.email}\nPhone: ${data.phone || "Not specified"}\nLocation: ${data.location || "Not specified"}\nPreferred date: ${data.dateFlexible ? "To be confirmed" : data.eventDate}\nGuests: ${data.guestCount || "To be discussed"}\nPreferences: ${data.preferences.join(", ") || "None specified"}\nServing style: ${data.serviceStyle || "To be discussed"}\nDietary requirements: ${data.dietary || "None specified"}\nBudget: ${data.budget || "To be discussed"}\nMessage: ${data.message || "None supplied"}\n\nThis is an inquiry, not a booking or a formal quotation.${isPreview ? "\nPreview submission: stored locally; not automatically delivered to TOC." : ""}`;
+  const summary = `${company.name}\nInquiry reference: ${reference}\nService: ${service?.title.en || (data.service === "contact" ? "General inquiry" : "Help choosing a service")}\nName: ${data.name}\nOrganization: ${data.organization || "Not specified"}\nEmail: ${data.email}\nPhone: ${data.phone || "Not specified"}\nEvent type: ${data.eventType || "Not specified"}\nLocation: ${data.location || "Not specified"}\nPreferred date: ${data.dateFlexible ? "To be confirmed" : data.eventDate}\nGuests: ${data.guestCount || "To be discussed"}\nPreferences: ${data.preferences.join(", ") || "None specified"}\nServing style: ${data.serviceStyle || "To be discussed"}\nDietary requirements: ${data.dietary || "None specified"}\nBudget: ${data.budget || "To be discussed"}\nMessage: ${data.message || "None supplied"}\n\nThis is an inquiry, not a booking or a formal quotation.${previewOnly ? "\nPreview submission: stored locally; not automatically delivered to TOC." : ""}`;
   const download = () => {
     const url = URL.createObjectURL(
       new Blob([summary], { type: "text/plain;charset=utf-8" }),
@@ -198,7 +202,7 @@ export function SuccessPanel({
         {t(L("THE FIRST STEP, TAKEN", "HATUA YA KWANZA IMECHUKULIWA"))}
       </Eyebrow>
       <h2>
-        {isPreview
+        {previewOnly
           ? t(
               L(
                 "Your preview request\nis saved.",
@@ -210,19 +214,33 @@ export function SuccessPanel({
             )}
       </h2>
       <p>
-        {isPreview
+        {previewOnly
           ? t(
               L(
                 "Thank you for trying the website. Your inquiry is stored in this preview’s staff inbox. No email has been sent and no booking has been made.",
                 "Asante kwa kujaribu tovuti. Ombi limehifadhiwa katika kikasha cha majaribio. Hakuna barua pepe iliyotumwa wala nafasi iliyohifadhiwa.",
               ),
             )
-          : t(
-              L(
-                "Your inquiry has been saved for staff review. Service availability, a formal quotation and any booking must be confirmed by TOC.",
-                "Ombi limehifadhiwa kwa mapitio ya timu. Upatikanaji, bei rasmi na nafasi lazima vithibitishwe na TOC.",
-              ),
-            )}
+          : emailSent
+            ? t(
+                L(
+                  `Your inquiry has been saved and emailed to ${company.email}. Service availability, a formal quotation and any booking must be confirmed by TOC.`,
+                  `Ombi lako limehifadhiwa na kutumwa kwa barua pepe kwa ${company.email}. Upatikanaji, bei rasmi na nafasi lazima vithibitishwe na TOC.`,
+                ),
+              )
+            : deliveryStatus === "email_failed"
+              ? t(
+                  L(
+                    "Your inquiry is saved, but the email notification could not be sent. You do not need to submit again. Please email the summary below or call TOC and quote your reference. This is not a confirmed booking.",
+                    "Ombi lako limehifadhiwa, lakini taarifa haikuweza kutumwa kwa barua pepe. Huhitaji kutuma ombi tena. Tuma muhtasari hapa chini kwa barua pepe au piga simu kwa TOC ukitaja namba ya ombi. Huu si uthibitisho wa nafasi.",
+                  ),
+                )
+              : t(
+                  L(
+                    "Your inquiry has been saved for staff review. No automatic email was sent. You can email the summary below or contact TOC directly and quote your reference. This is not a confirmed booking.",
+                    "Ombi limehifadhiwa kwa mapitio ya timu. Hakuna barua pepe iliyotumwa moja kwa moja. Unaweza kutuma muhtasari hapa chini au kuwasiliana na TOC ukitaja namba ya ombi. Huu si uthibitisho wa nafasi.",
+                  ),
+                )}
       </p>
       <div className="reference-box">
         <small>{t(L("YOUR REFERENCE", "NAMBA YA OMBI"))}</small>
@@ -254,16 +272,25 @@ export function SuccessPanel({
           href={`mailto:${company.email}?subject=${encodeURIComponent(`Service inquiry ${reference}`)}&body=${encodeURIComponent(summary)}`}
         >
           <Mail size={17} />
-          {t(L("Email this to TOC", "Tuma kwa TOC"))}
+          {emailSent
+            ? t(L("Open a follow-up draft", "Fungua rasimu ya ufuatiliaji"))
+            : t(L("Email this to TOC", "Tuma kwa TOC"))}
         </a>
       </div>
       <p className="success-email-note">
-        {t(
-          L(
-            "“Email this to TOC” opens your email app. Review and send the message yourself.",
-            "“Tuma kwa TOC” inafungua programu ya barua pepe. Pitia na utume ujumbe mwenyewe.",
-          ),
-        )}
+        {emailSent
+          ? t(
+              L(
+                "TOC has already been notified. This opens your email app for an optional follow-up; review and send it yourself.",
+                "TOC tayari imearifiwa. Hii inafungua programu yako ya barua pepe kwa ujumbe wa ziada wa hiari; hakiki na utume mwenyewe.",
+              ),
+            )
+          : t(
+              L(
+                "“Email this to TOC” opens your email app. Review and send the message yourself.",
+                "“Tuma kwa TOC” inafungua programu ya barua pepe. Pitia na utume ujumbe mwenyewe.",
+              ),
+            )}
       </p>
       <Link className="text-link" href="/">
         {t(L("Back to the homepage", "Rudi mwanzo"))}
@@ -292,6 +319,8 @@ export function QuotationPage({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [reference, setReference] = useState("");
+  const [deliveryStatus, setDeliveryStatus] =
+    useState<InquiryDeliveryStatus>("saved_for_review");
   const [draftAvailable, setDraftAvailable] = useState(false);
   const [saved, setSaved] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -478,6 +507,7 @@ export function QuotationPage({
         if (body.fields) setErrors(body.fields);
         return;
       }
+      setDeliveryStatus(body.deliveryStatus);
       setReference(body.reference);
       localStorage.removeItem(DRAFT_KEY);
       window.scrollTo({ top: 150, behavior: "smooth" });
@@ -557,7 +587,11 @@ export function QuotationPage({
         <Breadcrumb current={t(L("Request a quotation", "Omba bei"))} />
         {reference ? (
           <div className="quotation-success-wrap">
-            <SuccessPanel reference={reference} data={data} />
+            <SuccessPanel
+              reference={reference}
+              data={data}
+              deliveryStatus={deliveryStatus}
+            />
           </div>
         ) : (
           <>
@@ -1231,7 +1265,7 @@ export function QuotationPage({
                       {busy ? (
                         <>
                           <LoaderCircle size={17} className="spin" />
-                          {t(L("Saving request…", "Inahifadhi…"))}
+                          {t(L("Sending request…", "Inatuma ombi…"))}
                         </>
                       ) : (
                         <>
@@ -1364,12 +1398,15 @@ export function ContactForm() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [reference, setReference] = useState("");
+  const [deliveryStatus, setDeliveryStatus] =
+    useState<InquiryDeliveryStatus>("saved_for_review");
   const set = (key: keyof RequestData, value: string | boolean) => {
     setData((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     const err: Errors = {};
     if (data.name.trim().length < 2)
       err.name = t(L("Please enter your full name.", "Weka jina lako kamili."));
@@ -1403,6 +1440,7 @@ export function ContactForm() {
         setError(body.error || "Please check your details and try again.");
         return;
       }
+      setDeliveryStatus(body.deliveryStatus);
       setReference(body.reference);
     } catch {
       setError(
@@ -1418,7 +1456,14 @@ export function ContactForm() {
     }
   };
   if (reference)
-    return <SuccessPanel reference={reference} data={data} compact />;
+    return (
+      <SuccessPanel
+        reference={reference}
+        data={data}
+        deliveryStatus={deliveryStatus}
+        compact
+      />
+    );
   return (
     <form className="contact-form" onSubmit={submit} noValidate>
       <PreviewNotice />
@@ -1549,7 +1594,7 @@ export function ContactForm() {
         {busy ? (
           <>
             <LoaderCircle className="spin" size={17} />
-            {t(L("Saving…", "Inahifadhi…"))}
+            {t(L("Sending…", "Inatuma…"))}
           </>
         ) : (
           <>

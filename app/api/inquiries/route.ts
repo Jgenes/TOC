@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { inquirySchema } from "@/lib/inquiry";
 import { saveInquiry } from "@/lib/database";
 import { rateLimit, readJsonLimited, safeOrigin } from "@/lib/security";
-import { isPreview } from "@/lib/content";
+import { notifyInquiry } from "@/lib/inquiry-email";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   if (!safeOrigin(request))
@@ -36,12 +36,14 @@ export async function POST(request: NextRequest) {
         { status: 422 },
       );
     }
+    // Persist first: an SMTP failure must not lose the inquiry or invite a duplicate.
     const saved = saveInquiry(result.data);
+    const deliveryStatus = await notifyInquiry(result.data, saved);
     return NextResponse.json(
       {
         reference: saved.reference,
         createdAt: saved.createdAt,
-        deliveryStatus: isPreview ? "preview_local_only" : "saved_for_review",
+        deliveryStatus,
       },
       { status: 201, headers: { "Cache-Control": "no-store" } },
     );

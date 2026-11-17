@@ -2765,6 +2765,7 @@ a svg {
 .review-block button {
   display: flex;
   align-items: center;
+  min-height: 32px;
   gap: 5px;
   font-size: 8px;
   color: var(--red);
