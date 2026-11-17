@@ -1,0 +1,53 @@
+# EXAMPLE for a production TLS reverse proxy, not the Arena preview.
+# Install only after domain/certificate approval. Replace all YOUR_APPROVED_HOST
+# occurrences and certificate paths. Include limit_req_zone in the http context.
+limit_req_zone $binary_remote_addr zone=toc_forms:10m rate=6r/m;
+limit_req_zone $binary_remote_addr zone=toc_auth:10m rate=10r/m;
+
+server {
+    listen 80;
+    server_name YOUR_APPROVED_HOST;
+    return 301 https://YOUR_APPROVED_HOST$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name YOUR_APPROVED_HOST;
+    ssl_certificate /etc/letsencrypt/live/YOUR_APPROVED_HOST/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/YOUR_APPROVED_HOST/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 6m;
+    limit_req_status 429;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    add_header X-Frame-Options DENY always;
+    # Enable HSTS only after HTTPS and every affected subdomain have been verified.
+    # add_header Strict-Transport-Security "max-age=31536000" always;
+    # Create a nonce-based, tested CSP for Next before enforcing one; do not
+    # blindly add unsafe-eval or a wildcard provider allowlist.
+
+    # Preserve method/URL for Next. Never expose data/, backups/, env or private files.
+    location ~ ^/(?:data|backups|research|infrastructure)/ { return 404; }
+    location ~ /\. { return 404; }
+    location = /api/inquiries {
+        limit_req zone=toc_forms burst=5 nodelay;
+        include /etc/nginx/snippets/toc-proxy.conf;
+    }
+    location ^~ /api/platform/auth/ {
+        limit_req zone=toc_auth burst=10 nodelay;
+        include /etc/nginx/snippets/toc-proxy.conf;
+    }
+    location / { include /etc/nginx/snippets/toc-proxy.conf; }
+}
+
+# Save the following directives separately as /etc/nginx/snippets/toc-proxy.conf:
+# proxy_pass http://127.0.0.1:3000;
+# proxy_http_version 1.1;
+# proxy_set_header Host $host;
+# proxy_set_header X-Forwarded-Host $host;
+# proxy_set_header X-Forwarded-Proto $scheme;
+# proxy_set_header X-Forwarded-For $remote_addr;
+# proxy_set_header X-Real-IP $remote_addr;
+# proxy_read_timeout 120s;
+# proxy_buffering off;
+# Overwrite forwarded headers, rather than trusting values supplied by visitors.
+# Firewall the application port so only the proxy can reach it.

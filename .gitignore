@@ -2,9 +2,13 @@ node_modules/
 .next/
 .env*
 !.env.example
-data/*.sqlite*
+data/**
+!data/.gitkeep
 STAFF-ACCESS.txt
 research/
 playwright-report/
 test-results/
 *.tsbuildinfo
+
+ACCOUNT-ACCESS.txt
+backups/

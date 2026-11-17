@@ -1,23 +1,49 @@
 export type Language = "en" | "sw";
 export type Localized = { en: string; sw: string };
+export type ContentSeo = {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  socialTitle?: string;
+  socialDescription?: string;
+};
+export type ImagePosition = "center" | "left" | "right" | "top" | "bottom";
 export const L = (en: string, sw: string): Localized => ({ en, sw });
 
-export const company = {
+export type Company = {
+  name: string;
+  brand: string;
+  email: string;
+  phone: string;
+  phoneHref: string;
+  secondaryPhone: string;
+  location: string;
+  source: string;
+  verified: boolean;
+  social?: { label: string; url: string }[];
+  whatsapp?: string;
+};
+export const company: Company = {
   name: "TOC Investment Company Limited",
   brand: "Touch of Class",
-  email: "touchofclassinvestment@gmail.com",
+  email: "info@tocinvestment.co.tz",
   phone: "+255 677 677 703",
   phoneHref: "+255677677703",
   secondaryPhone: "+255 755 439 072",
   location: "Kisasa, Dodoma, Tanzania",
   source:
-    "TOC Website Blue Print.docx — corporate master-data register, section 2.2",
+    "Email supplied by TOC for the SMTP integration; other contacts from TOC Website Blue Print.docx, section 2.2",
   verified: false,
 };
 export const isPreview = process.env.NEXT_PUBLIC_PREVIEW_MODE !== "false";
 
 export type Service = {
-  slug: "event-management" | "catering" | "entertainment";
+  slug:
+    | "event-management"
+    | "catering"
+    | "general-cleaning"
+    | "ict-solutions"
+    | "entertainment";
   number: string;
   title: Localized;
   shortTitle: Localized;
@@ -27,7 +53,17 @@ export type Service = {
   intro: Localized;
   image: string;
   imageAlt: string;
-  icon: "calendar" | "utensils" | "audio";
+  imageAltLocalized?: Localized;
+  imagePosition?: ImagePosition;
+  mobileImagePosition?: ImagePosition;
+  caption?: Localized;
+  seo?: ContentSeo;
+  mediaRights?: boolean;
+  permissionEvidence?: string;
+  icon: "calendar" | "utensils" | "sparkles" | "monitor" | "audio";
+  cta?: Localized;
+  workflow?: { title: Localized; description: Localized }[];
+  safety?: Localized;
   tags: Localized[];
   capabilities: { title: Localized; description: Localized }[];
   faqs: { question: Localized; answer: Localized }[];
@@ -227,8 +263,276 @@ export const services: Service[] = [
     ],
   },
   {
-    slug: "entertainment",
+    slug: "general-cleaning",
     number: "03",
+    title: L(
+      "General cleaning & facility services",
+      "Usafi na huduma za majengo",
+    ),
+    shortTitle: L("Cleaning", "Usafi"),
+    eyebrow: L(
+      "Cleaner spaces. Considered care.",
+      "Mazingira safi. Uangalifu makini.",
+    ),
+    headline: L(
+      "A fresh start.\nA space that works.",
+      "Mwanzo mpya.\nMazingira yanayofaa.",
+    ),
+    description: L(
+      "Office, institutional and post-event cleaning. Start with a site assessment and a scope shaped around your premises.",
+      "Usafi wa ofisi, taasisi na baada ya hafla. Anza na tathmini ya eneo na huduma zinazofaa jengo lako.",
+    ),
+    intro: L(
+      "One visit or an ongoing plan: tell us about your premises, the areas that need attention and your preferred schedule. The team reviews access, supplies, staffing and safety before confirming the work. Specialist or hazardous cleaning is not assumed to be included.",
+      "Ziara moja au mpango endelevu: tueleze kuhusu jengo, maeneo yanayohitaji huduma na ratiba unayopendelea. Timu hupitia ufikiaji, vifaa, wafanyakazi na usalama kabla ya kuthibitisha. Usafi hatarishi haujumuishwi moja kwa moja.",
+    ),
+    image: "/assets/general-cleaning.webp",
+    imageAlt:
+      "AI-generated illustration of a clean contemporary office with professional cleaning equipment; not a TOC project",
+    icon: "sparkles",
+    cta: L("Request a site assessment", "Omba tathmini ya eneo"),
+    tags: [
+      L("Workplaces & institutions", "Ofisi na taasisi"),
+      L("One-time & recurring", "Mara moja na mara kwa mara"),
+      L("Post-event cleaning", "Usafi baada ya hafla"),
+    ],
+    capabilities: [
+      {
+        title: L(
+          "Office & institutional cleaning",
+          "Usafi wa ofisi na taasisi",
+        ),
+        description: L(
+          "Discuss cleaning for workspaces, shared areas, schools and institutional premises, with agreed access and supervision.",
+          "Jadili usafi wa sehemu za kazi, maeneo ya pamoja, shule na taasisi kwa ufikiaji na usimamizi uliokubaliwa.",
+        ),
+      },
+      {
+        title: L(
+          "Post-event & deep cleaning",
+          "Usafi baada ya hafla na wa kina",
+        ),
+        description: L(
+          "Define the venue handover, detailed cleaning areas and waste arrangements before the job is agreed.",
+          "Eleza makabidhiano ya ukumbi, maeneo ya usafi wa kina na mpango wa taka kabla ya makubaliano.",
+        ),
+      },
+      {
+        title: L("Floor care & washroom sanitation", "Sakafu na usafi wa vyoo"),
+        description: L(
+          "An assessment identifies floor finishes, washroom requirements and suitable materials; methods and equipment are confirmed by staff.",
+          "Tathmini hubaini aina ya sakafu, mahitaji ya vyoo na vifaa vinavyofaa; mbinu na vifaa huthibitishwa na timu.",
+        ),
+      },
+      {
+        title: L(
+          "Scheduled facility support",
+          "Huduma za majengo zenye ratiba",
+        ),
+        description: L(
+          "Request daily, weekly or monthly visits with an agreed checklist, supervisor review and a record for each visit.",
+          "Omba ziara za kila siku, wiki au mwezi zenye orodha ya kazi, mapitio ya msimamizi na rekodi ya kila ziara.",
+        ),
+      },
+    ],
+    workflow: [
+      {
+        title: L("Assess the site", "Tathmini eneo"),
+        description: L(
+          "Review premises, access and any inspection needs.",
+          "Pitia jengo, ufikiaji na hitaji la ukaguzi.",
+        ),
+      },
+      {
+        title: L("Agree the plan", "Kubali mpango"),
+        description: L(
+          "Confirm areas, methods, supplies, frequency and a reviewed quotation.",
+          "Thibitisha maeneo, mbinu, vifaa, marudio na bei iliyopitiwa.",
+        ),
+      },
+      {
+        title: L("Coordinate the work", "Ratibu kazi"),
+        description: L(
+          "Assign the supervisor, team, schedule and service checklist.",
+          "Panga msimamizi, timu, ratiba na orodha ya kazi.",
+        ),
+      },
+      {
+        title: L("Inspect & improve", "Kagua na boresha"),
+        description: L(
+          "Record checklist completion, issues and customer feedback.",
+          "Rekodi kazi zilizokamilika, changamoto na maoni ya mteja.",
+        ),
+      },
+    ],
+    safety: L(
+      "No hazardous-material, medical-waste or high-risk industrial work is offered automatically. Access restrictions, chemicals, equipment and specialist activities require an explicit safety review. Coverage and capacity are confirmed for each request.",
+      "Hakuna huduma za vitu hatarishi, taka za hospitali au viwanda hatarishi zinazotolewa moja kwa moja. Masharti ya ufikiaji, kemikali, vifaa na kazi maalumu huhitaji mapitio ya usalama. Eneo na uwezo huthibitishwa kwa kila ombi.",
+    ),
+    faqs: [
+      {
+        question: L(
+          "Can I request a recurring cleaning plan?",
+          "Ninaweza kuomba mpango wa usafi wa mara kwa mara?",
+        ),
+        answer: L(
+          "Yes. Select a frequency in your request. Staff will discuss the contract, visit schedule, supervision and checklist. A request alone does not create a confirmed cleaning contract.",
+          "Ndiyo. Chagua marudio kwenye ombi. Timu itajadili mkataba, ratiba, usimamizi na orodha ya kazi. Ombi pekee halithibitishi mkataba.",
+        ),
+      },
+      {
+        question: L(
+          "Do you need to inspect the premises first?",
+          "Mnahitaji kukagua jengo kwanza?",
+        ),
+        answer: L(
+          "A site assessment may be needed to confirm the area, surfaces, access and safety requirements. You may suggest an inspection date; staff must confirm it.",
+          "Tathmini inaweza kuhitajika kuthibitisha ukubwa, sakafu, ufikiaji na usalama. Unaweza kupendekeza tarehe ya ukaguzi; timu lazima iithibitishe.",
+        ),
+      },
+      {
+        question: L(
+          "Who supplies the equipment and cleaning materials?",
+          "Nani anatoa vifaa na bidhaa za usafi?",
+        ),
+        answer: L(
+          "Choose client-supplied, TOC-supplied or to be discussed. Exact equipment, materials, supervision and responsibilities are agreed in the scope, not guaranteed by this website.",
+          "Chagua vifaa vya mteja, vya TOC au vya kujadili. Vifaa, bidhaa, usimamizi na majukumu hukubaliwa kwenye wigo wa kazi; tovuti haitoi hakikisho.",
+        ),
+      },
+    ],
+  },
+  {
+    slug: "ict-solutions",
+    number: "04",
+    title: L("ICT & digital solutions", "TEHAMA na suluhisho za kidijitali"),
+    shortTitle: L("ICT solutions", "Suluhisho za TEHAMA"),
+    eyebrow: L("Technology with a purpose.", "Teknolojia yenye kusudi."),
+    headline: L(
+      "Better systems.\nBetter business.",
+      "Mifumo bora.\nBiashara bora.",
+    ),
+    description: L(
+      "Websites, digital workflows, networking and IT support. Describe your challenge and start a practical technical conversation.",
+      "Tovuti, mifumo ya kazi, mitandao na msaada wa TEHAMA. Eleza changamoto yako tuanze mazungumzo ya kiufundi.",
+    ),
+    intro: L(
+      "Start with the problem, not the jargon. Tell us what your organization needs to improve, the systems involved and the people affected. The technical team reviews feasibility and delivery capability before proposing a solution, timetable or support arrangement.",
+      "Anza na tatizo, si misamiati migumu. Tueleze kinachohitaji kuboreshwa, mifumo inayohusika na watu walioathirika. Timu ya kiufundi hupitia uwezekano na uwezo kabla ya kupendekeza suluhisho, ratiba au msaada.",
+    ),
+    image: "/assets/ict-solutions.webp",
+    imageAlt:
+      "AI-generated illustration of an organized technology workspace and network equipment; not a TOC project",
+    icon: "monitor",
+    cta: L("Discuss your ICT project", "Jadili mradi wako wa TEHAMA"),
+    tags: [
+      L("Websites & digital systems", "Tovuti na mifumo ya kidijitali"),
+      L("Networks & IT support", "Mitandao na msaada wa TEHAMA"),
+      L("Technical discovery", "Tathmini ya kiufundi"),
+    ],
+    capabilities: [
+      {
+        title: L("Websites & software", "Tovuti na programu"),
+        description: L(
+          "Discuss corporate websites, content management, portals, dashboards and software workflows. Requirements, testing and handover are scoped before delivery.",
+          "Jadili tovuti za kampuni, usimamizi wa maudhui, milango, dashibodi na mifumo ya programu. Mahitaji, majaribio na makabidhiano hupangwa kabla ya utekelezaji.",
+        ),
+      },
+      {
+        title: L("Networks & IT support", "Mitandao na msaada wa TEHAMA"),
+        description: L(
+          "Describe LAN, Wi-Fi, device, software or user-support issues. Staff will assess the environment and agree the authorized support scope.",
+          "Eleza matatizo ya LAN, Wi-Fi, vifaa, programu au watumiaji. Timu itatathmini mazingira na kukubaliana wigo wa msaada.",
+        ),
+      },
+      {
+        title: L(
+          "Equipment & digital transformation",
+          "Vifaa na mabadiliko ya kidijitali",
+        ),
+        description: L(
+          "Request advice on equipment specifications, configuration, process mapping and automation. Procurement and vendor arrangements require separate confirmation.",
+          "Omba ushauri wa vipimo vya vifaa, usanidi, michakato na otomatiki. Ununuzi na mipango ya wauzaji huhitaji uthibitisho tofauti.",
+        ),
+      },
+      {
+        title: L("Security & AI discovery", "Tathmini ya usalama na AI"),
+        description: L(
+          "Discuss authorized protective controls and human-reviewed AI workflows. Specialist work depends on verified expertise, written scope and explicit authorization; no certification or compliance guarantee is implied.",
+          "Jadili udhibiti ulioidhinishwa na mifumo ya AI inayopitiwa na binadamu. Kazi maalumu hutegemea utaalamu uliothibitishwa, wigo wa maandishi na idhini; hakuna hakikisho la cheti au utii wa sheria.",
+        ),
+      },
+    ],
+    workflow: [
+      {
+        title: L("Discover", "Elewa mahitaji"),
+        description: L(
+          "Document the problem, requirements and business objectives.",
+          "Rekodi tatizo, mahitaji na malengo ya biashara.",
+        ),
+      },
+      {
+        title: L("Design & authorize", "Buni na idhinisha"),
+        description: L(
+          "Review the solution, scope, quotation and written authorization.",
+          "Pitia suluhisho, wigo, bei na idhini ya maandishi.",
+        ),
+      },
+      {
+        title: L("Implement & test", "Tekeleza na jaribu"),
+        description: L(
+          "Track work, changes, functional tests and acceptance evidence.",
+          "Fuatilia kazi, mabadiliko, majaribio na ushahidi wa kukubalika.",
+        ),
+      },
+      {
+        title: L("Hand over", "Kabidhi"),
+        description: L(
+          "Agree documentation, training, support and customer acceptance.",
+          "Kubali nyaraka, mafunzo, msaada na kukubalika na mteja.",
+        ),
+      },
+    ],
+    safety: L(
+      "Never submit passwords, API keys, private keys or production credentials. Urgency is a triage preference, not a guaranteed response time. Cybersecurity assessments require written authorization. Confidential files are exchanged only through the protected document workflow after staff review.",
+      "Usitume nywila, funguo za API, funguo binafsi au taarifa za siri za mifumo. Uharaka ni kipaumbele cha tathmini, si ahadi ya muda wa majibu. Tathmini za usalama huhitaji idhini ya maandishi. Faili za siri hutumwa kupitia mfumo uliolindwa baada ya mapitio ya timu.",
+    ),
+    faqs: [
+      {
+        question: L(
+          "What should I include in an ICT request?",
+          "Nijumuishe nini katika ombi la TEHAMA?",
+        ),
+        answer: L(
+          "Describe the business problem, existing systems, approximate affected users, urgency, location or remote preference and consultation needs. Never include credentials or confidential production data.",
+          "Eleza tatizo, mifumo iliyopo, watumiaji walioathirika, uharaka, eneo au msaada wa mbali na hitaji la mazungumzo. Usijumuishe nywila au data za siri.",
+        ),
+      },
+      {
+        question: L(
+          "Does critical urgency guarantee immediate support?",
+          "Kipaumbele cha dharura kinahakikisha msaada wa papo hapo?",
+        ),
+        answer: L(
+          "No. Staff must confirm availability, responsibilities and any service-level agreement. This public form is not an emergency response service.",
+          "Hapana. Timu lazima ithibitishe upatikanaji, majukumu na makubaliano ya huduma. Fomu hii si huduma ya kujibu dharura.",
+        ),
+      },
+      {
+        question: L(
+          "Can I request software, networking and support together?",
+          "Ninaweza kuomba programu, mitandao na msaada pamoja?",
+        ),
+        answer: L(
+          "Yes. Explain the combined requirement. The technical team will confirm the delivery scope, competencies, dependencies, testing, documentation and support terms before work begins.",
+          "Ndiyo. Eleza mahitaji kwa pamoja. Timu itathibitisha wigo, utaalamu, utegemezi, majaribio, nyaraka na masharti ya msaada kabla ya kazi kuanza.",
+        ),
+      },
+    ],
+  },
+  {
+    slug: "entertainment",
+    number: "05",
     title: L("Entertainment & production", "Burudani na uzalishaji wa hafla"),
     shortTitle: L("Production", "Uzalishaji"),
     eyebrow: L(
@@ -324,23 +628,35 @@ export const services: Service[] = [
   },
 ];
 
-// These proposed divisions are intentionally excluded from public navigation and forms.
-export const unpublishedDivisions = [
-  {
-    slug: "general-cleaning",
-    status: "under_review",
-    reason:
-      "Standalone commercial scope, staffing and equipment require management approval.",
-  },
-  {
-    slug: "ict-solutions",
-    status: "draft",
-    reason:
-      "New proposed business line; delivery capability has not been established in the source profiles.",
-  },
-];
+// All five divisions are included at the user's direction on 17 November 2026.
+// Inclusion is not evidence of certifications, equipment ownership or available capacity.
+export const unpublishedDivisions: {
+  slug: string;
+  status: string;
+  reason: string;
+}[] = [];
 
 export const galleryImages = [
+  {
+    id: "cleaning",
+    src: "/assets/general-cleaning.webp",
+    category: "cleaning",
+    title: L("A cleaner working day", "Siku ya kazi katika usafi"),
+    subtitle: L(
+      "AI-generated cleaning inspiration",
+      "Msukumo wa usafi uliotengenezwa kwa AI",
+    ),
+  },
+  {
+    id: "ict",
+    src: "/assets/ict-solutions.webp",
+    category: "ict",
+    title: L("Connected to better possibilities", "Unganika na uwezekano bora"),
+    subtitle: L(
+      "AI-generated ICT inspiration",
+      "Msukumo wa TEHAMA uliotengenezwa kwa AI",
+    ),
+  },
   {
     id: "gala",
     src: "/assets/hero.webp",
@@ -471,8 +787,8 @@ export const processSteps = [
   {
     title: L("Share your vision", "Shiriki maono yako"),
     text: L(
-      "Tell us about your occasion, your people and what you have in mind.",
-      "Tueleze kuhusu tukio lako, wageni na mawazo uliyonayo.",
+      "Tell us about your event, premises or technical challenge and what you have in mind.",
+      "Tueleze kuhusu hafla, jengo au changamoto ya kiufundi na mawazo uliyonayo.",
     ),
   },
   {
@@ -490,10 +806,10 @@ export const processSteps = [
     ),
   },
   {
-    title: L("Enjoy the occasion", "Furahia tukio"),
+    title: L("Deliver & review", "Tekeleza na tathmini"),
     text: L(
-      "We coordinate the agreed services, so you can focus on your guests.",
-      "Tunaratibu huduma mlizokubaliana ili uzingatie wageni wako.",
+      "We coordinate the agreed services and review the result with you.",
+      "Tunaratibu huduma mlizokubaliana na kupitia matokeo pamoja nawe.",
     ),
   },
 ];

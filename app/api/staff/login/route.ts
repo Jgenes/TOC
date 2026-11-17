@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPreview } from "@/lib/content";
 import {
   createStaffSession,
   passwordMatches,
@@ -11,6 +12,14 @@ import {
 } from "@/lib/security";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
+  if (!isPreview)
+    return NextResponse.json(
+      {
+        error:
+          "Shared-password access is disabled in production. Use an individual account with MFA at /admin.",
+      },
+      { status: 403 },
+    );
   if (!safeOrigin(request))
     return NextResponse.json(
       { error: "Invalid request origin." },

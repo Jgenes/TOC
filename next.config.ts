@@ -3,7 +3,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["localhost", "127.0.0.1", "*.e2b.app"],
   poweredByHeader: false,
   devIndicators: false,
-  serverExternalPackages: ["better-sqlite3"],
+  serverExternalPackages: ["better-sqlite3", "pdfkit"],
   images: { formats: ["image/avif", "image/webp"] },
   async headers() {
     return [

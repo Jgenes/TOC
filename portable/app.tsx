@@ -12,6 +12,7 @@ import {
 } from "../components/pages";
 import { QuotationPage } from "../components/request-form";
 import { SiteProvider, PublicShell, Logo } from "../components/site-shell";
+import { ContentListing, SupplierPage } from "../components/public-content";
 import { services } from "../lib/content";
 import { PathContext } from "./navigation";
 import Link from "./link";
@@ -54,7 +55,21 @@ function PortableApp() {
     };
   }, []);
   const [pathname, query] = route.split("?");
-  const service = services.find((s) => pathname === `/services/${s.slug}`);
+  const alias =
+    pathname === "/services/cleaning"
+      ? "/services/general-cleaning"
+      : pathname === "/services/ict"
+        ? "/services/ict-solutions"
+        : pathname;
+  const service = services.find((s) => alias === `/services/${s.slug}`);
+  const listing: Record<string, string> = {
+    "/projects": "project",
+    "/clients": "client",
+    "/news": "article",
+    "/careers": "career",
+    "/downloads": "document",
+    "/about/leadership": "team",
+  };
   const page =
     pathname === "/" ? (
       <HomePage />
@@ -68,9 +83,15 @@ function PortableApp() {
       <GalleryPage />
     ) : pathname === "/contact" ? (
       <ContactPage />
-    ) : pathname === "/quality-and-safety" ? (
+    ) : listing[pathname] ? (
+      <ContentListing type={listing[pathname]} />
+    ) : pathname === "/opportunities" ? (
+      <SupplierPage />
+    ) : ["/quality-and-safety", "/about/quality-and-safety"].includes(
+        pathname,
+      ) ? (
       <QualityPage />
-    ) : pathname === "/privacy" ? (
+    ) : ["/privacy", "/privacy-policy"].includes(pathname) ? (
       <LegalPage kind="privacy" />
     ) : pathname === "/terms" ? (
       <LegalPage kind="terms" />
@@ -79,7 +100,9 @@ function PortableApp() {
         key={route}
         initialService={new URLSearchParams(query).get("service") || ""}
       />
-    ) : pathname === "/staff" ? (
+    ) : ["/staff", "/admin", "/portal"].some(
+        (path) => pathname === path || pathname.startsWith(path + "/"),
+      ) ? (
       <section className="staff-login-page">
         <Link href="/">
           <Logo />
@@ -89,10 +112,12 @@ function PortableApp() {
             <span />
             LIVE WEBSITE FEATURE
           </div>
-          <h1>The staff inbox.</h1>
+          <h1>The protected TOC platform.</h1>
           <p>
-            Staff authentication and saved inquiries are available in the
-            running TOC website, not this portable design preview.
+            Customer accounts, the CMS, staff workspaces and saved records
+            require the running TOC website. This portable file contains public
+            design screens only; it cannot sign in, publish content or submit
+            inquiries.
           </p>
           <p>
             Use the live preview in Arena or run the included Next.js source
@@ -140,6 +165,22 @@ try {
     configurable: true,
   });
 }
+// Opaque document viewers are not secure contexts, so randomUUID may be absent.
+// Keep this compatibility shim confined to the standalone design bundle. It uses
+// Web Crypto randomness and never grants a server session or submits a request.
+if (typeof crypto.randomUUID !== "function")
+  Object.defineProperty(crypto, "randomUUID", {
+    configurable: true,
+    value: () => {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex = Array.from(bytes, (byte) =>
+        byte.toString(16).padStart(2, "0"),
+      ).join("");
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    },
+  });
 // Sandboxed document viewers do not grant native form-submission permission.
 // Dispatch the React validation event ourselves; the offline fetch below never sends data.
 document.addEventListener(
@@ -162,7 +203,9 @@ window.fetch = async () =>
   new Response(
     JSON.stringify({
       error:
-        "This is the portable design preview. Requests cannot be submitted here. Please use the live website in Arena, or run the included source project.",
+        document.documentElement.lang === "sw"
+          ? "Hili ni hakikisho la muundo pekee. Maombi hayawezi kutumwa hapa. Tumia tovuti inayoendeshwa katika Arena au mradi wa chanzo uliojumuishwa."
+          : "This is the portable design preview. Requests cannot be submitted here. Please use the live website in Arena, or run the included source project.",
     }),
     { status: 503, headers: { "Content-Type": "application/json" } },
   );

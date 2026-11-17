@@ -8,13 +8,19 @@ const valid = {
   email: "preview@example.test",
   phone: "+255 700 000 001",
   location: "Dodoma",
+  region: "Dodoma",
+  eventType: "Corporate event",
+  guestCount: 100,
+  preferences: ["Menu guidance requested"],
+  serviceStyle: "discuss",
   dateFlexible: true,
   consent: true,
 };
 test("valid requests are parsed and defaults applied", () => {
   const result = inquirySchema.safeParse(valid);
   assert.equal(result.success, true);
-  if (result.success) assert.deepEqual(result.data.preferences, []);
+  if (result.success)
+    assert.deepEqual(result.data.preferences, ["Menu guidance requested"]);
 });
 test("quotation requires a valid service and contact details", () => {
   assert.equal(

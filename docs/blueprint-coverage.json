@@ -1,0 +1,2970 @@
+{
+  "source": {
+    "fileName": "TOC Website Blue Print (1)_compressed.pdf",
+    "pageCount": 159,
+    "reviewDate": "2026-11-17",
+    "explicitRequirementCount": 181,
+    "note": "Explicit IDs are not exhaustive. Narrative page ranges cover all 159 supplied PDF pages. User instruction to include ICT & Cleaning supersedes their proposed/unpublished status in the document."
+  },
+  "statusLegend": {
+    "I": "Implemented locally with cited source/checks; not a production or business approval.",
+    "P": "Partial or deliberate implementation alternative; remaining work is explicit.",
+    "C": "Code exists but a real dependency/configuration and acceptance test are still required.",
+    "O": "Management/legal/content/independent real-world acceptance required; not established by local code/tests."
+  },
+  "requirements": [
+    {
+      "id": "FR-001",
+      "page": 9,
+      "requirement": "Display approved corporate identity Must Correct company details on all pages",
+      "status": "O",
+      "implementation": "Central public company/profile record and shared shell.",
+      "evidence": [
+        "lib/content.ts",
+        "components/site-shell.tsx",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": "TOC must approve official identity, contacts and artwork; source-derived details are not independently verified."
+    },
+    {
+      "id": "FR-002",
+      "page": 9,
+      "requirement": "Publish service-specific landing pages Must Each approved service has a working route",
+      "status": "I",
+      "implementation": "Five responsive service routes, including ICT and Cleaning.",
+      "evidence": [
+        "app/services/[slug]/page.tsx",
+        "components/pages.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-003",
+      "page": 9,
+      "requirement": "Receive structured service inquiries Must Valid request saved with reference number",
+      "status": "I",
+      "implementation": "Conditional server-validated intake, atomic persistence and database-allocated reference.",
+      "evidence": [
+        "lib/inquiry.ts",
+        "app/api/inquiries/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-004",
+      "page": 9,
+      "requirement": "Route inquiries to departments Must Authorized department can access assigned requests",
+      "status": "I",
+      "implementation": "Department-scoped work register; Event→Catering and additional-division coordination.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "components/platform-inquiries.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-005",
+      "page": 9,
+      "requirement": "Manage website content through CMS Must Editor can update approved content",
+      "status": "I",
+      "implementation": "Custom structured CMS, persistent revisions and independent publication workflow.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-006",
+      "page": 9,
+      "requirement": "Implement role-based permissions Must Unauthorized access is rejected server-side",
+      "status": "I",
+      "implementation": "Server-enforced roles, ownership, department access, MFA and separate delegation.",
+      "evidence": [
+        "lib/platform-auth.ts",
+        "app/api/platform/[...path]/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-007",
+      "page": 9,
+      "requirement": "Prepare and approve quotations Must Approved quotation retains version and audit history",
+      "status": "I",
+      "implementation": "Immutable quotation versions, independent reviews, ceilings, PDFs and audit.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/quotation-pdf.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-008",
+      "page": 9,
+      "requirement": "Send inquiry acknowledgements Must Delivery attempt and status recorded",
+      "status": "C",
+      "implementation": "Acknowledgements and staff mail queued transactionally; delivery attempts and leases retained.",
+      "evidence": [
+        "app/api/inquiries/route.ts",
+        "lib/platform-mail.ts",
+        "tests/platform-mail.test.ts"
+      ],
+      "remaining": "Real SMTP password, scheduled worker, outbound connectivity and actual mailbox receipt remain unverified."
+    },
+    {
+      "id": "FR-009",
+      "page": 9,
+      "requirement": "Provide business reports Should Authorized management can view inquiry statistics",
+      "status": "P",
+      "implementation": "Scoped inquiry/qualification/response/offer/booking cohorts and disclosed denominators.",
+      "evidence": [
+        "lib/platform-crm.ts",
+        "lib/platform-operations.ts",
+        "components/platform-management.tsx"
+      ],
+      "remaining": "External traffic attribution, invoice/payment data and full historical outcome reporting are not connected."
+    },
+    {
+      "id": "FR-010",
+      "page": 9,
+      "requirement": "Support English and Kiswahili Should Approved translations available for core pages",
+      "status": "P",
+      "implementation": "Bilingual core pages, CMS data and most workspace labels.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/platform-copy.ts",
+        "components/workspace-text.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Distinct localized URLs/hreflang, fully localized metadata/diagnostics and fluent editorial sign-off remain."
+    },
+    {
+      "id": "FR-011",
+      "page": 9,
+      "requirement": "Provide AI customer assistance Later Responses grounded in approved knowledge",
+      "status": "C",
+      "implementation": "Published-source guide, revision citations and optional governed model selection.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "components/public-content.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Approved real provider/model/key, transfer review and live quality evaluation are absent."
+    },
+    {
+      "id": "FR-012",
+      "page": 9,
+      "requirement": "Provide customer portal Later Customer sees only their authorized records",
+      "status": "I",
+      "implementation": "Verified owned-record portal, guest claiming, issued offers/documents/messages/delivery.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "app/api/platform/[...path]/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "FR-013",
+      "page": 9,
+      "requirement": "Generate AI quotation drafts Later Staff must approve before sending",
+      "status": "C",
+      "implementation": "Review-only structured staff scope/questions/current-rate references; optional generative draft.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "components/platform-quotations.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "No live model validation; the assistant never selects prices, issues offers or books work."
+    },
+    {
+      "id": "AC-201",
+      "page": 24,
+      "requirement": "Corporate details are consistent Compare public pages against approved master record",
+      "status": "O",
+      "implementation": "Central corporate record used across public views.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Reconcile contacts/postal/legal identifiers and approve the master record."
+    },
+    {
+      "id": "AC-202",
+      "page": 24,
+      "requirement": "Source content is traceable Inspect content-source references",
+      "status": "I",
+      "implementation": "Every content revision stores a source reference, author, approval and history.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AC-203",
+      "page": 24,
+      "requirement": "Services are correctly categorized Management review of service catalogue",
+      "status": "O",
+      "implementation": "Five requested service divisions with governed catalogues.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "User explicitly requested ICT/Cleaning; operational competence/coverage and final taxonomy need TOC sign-off."
+    },
+    {
+      "id": "AC-204",
+      "page": 24,
+      "requirement": "Unapproved services are not publicly advertised CMS publication-status test",
+      "status": "I",
+      "implementation": "CMS publication state controls service routes, navigation, catalogues/rates and AI sources.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AC-205",
+      "page": 24,
+      "requirement": "Client references are supported Review approval and evidence records",
+      "status": "O",
+      "implementation": "Client/project/testimonial publication requires permission/evidence; no fabricated client seeds.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Actual client references and written publication permissions have not been supplied."
+    },
+    {
+      "id": "AC-206",
+      "page": 24,
+      "requirement": "CMS changes are controlled Test draft, review and publish workflow",
+      "status": "I",
+      "implementation": "Separate draft/review/approved/published pointers and independent reviewer.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AC-207",
+      "page": 24,
+      "requirement": "Contact information is centrally managed Update one record and verify all affected pages",
+      "status": "I",
+      "implementation": "Shared company profile supplies public contact data; form-recipient remains owner-fixed.",
+      "evidence": [
+        "lib/content.ts",
+        "lib/platform-cms.ts",
+        "lib/inquiry-email.ts",
+        "tests/inquiry-email.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AC-208",
+      "page": 24,
+      "requirement": "Portfolio entries use authorized media Check media rights and publication status",
+      "status": "P",
+      "implementation": "Media evidence, clean upload and bilingual-alt gates apply to new approved CMS revisions.",
+      "evidence": [
+        "lib/platform-documents.ts",
+        "lib/platform-cms.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Seeded design/gallery illustrations still require actual publication licences/TOC replacement."
+    },
+    {
+      "id": "AC-209",
+      "page": 24,
+      "requirement": "Website supports English and Kiswahili content Test language-specific pages and fallback behavior",
+      "status": "P",
+      "implementation": "English/Kiswahili views and language persistence are functional.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/platform-copy.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Locale-specific URL/SEO architecture and complete human translation acceptance remain."
+    },
+    {
+      "id": "AC-210",
+      "page": 24,
+      "requirement": "Sensitive records remain protected Authorization and API security tests",
+      "status": "I",
+      "implementation": "Private projections, authenticated files, scope/ownership and direct API regression checks.",
+      "evidence": [
+        "app/api/platform/[...path]/route.ts",
+        "lib/platform-documents.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-001",
+      "page": 37,
+      "requirement": "Logo is displayed consistently Compare against approved artwork",
+      "status": "O",
+      "implementation": "One shared vector wordmark component.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Official vector artwork and management identity approval are outstanding."
+    },
+    {
+      "id": "DS-002",
+      "page": 37,
+      "requirement": "Brand colors use approved tokens Inspect component styles",
+      "status": "O",
+      "implementation": "Central CSS color tokens and consistent component usage.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Chosen accessible design palette is an implementation interpretation, not an approved official brand manual."
+    },
+    {
+      "id": "DS-003",
+      "page": 37,
+      "requirement": "Typography follows defined scale Review desktop and mobile pages",
+      "status": "I",
+      "implementation": "Local Manrope/Inter fonts, responsive heading/body scale and shared components.",
+      "evidence": [
+        "app/layout.tsx",
+        "app/globals.css",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-004",
+      "page": 37,
+      "requirement": "Layouts adapt across supported widths Responsive browser testing",
+      "status": "I",
+      "implementation": "Public widths 320/390/768/1440 and private desktop/mobile checks.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-005",
+      "page": 37,
+      "requirement": "Service cards share consistent components Component audit",
+      "status": "I",
+      "implementation": "Shared five-division card/detail layouts and interaction patterns.",
+      "evidence": [
+        "components/pages.tsx",
+        "app/globals.css",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-006",
+      "page": 37,
+      "requirement": "Navigation supports keyboard and touch Interaction testing",
+      "status": "I",
+      "implementation": "Desktop menu, keyboard/touch drawer, Escape/focus and mobile navigation.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-007",
+      "page": 37,
+      "requirement": "Forms have accessible labels and errors Accessibility testing",
+      "status": "I",
+      "implementation": "Explicit labels/described-by, error focus, bounded fields and reviewed form states.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-shared.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-008",
+      "page": 37,
+      "requirement": "Images are optimized and properly attributed Media and performance audit",
+      "status": "P",
+      "implementation": "Optimized local WebP/font assets, ratios/lazy loading and CMS captions/rights metadata.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/public-content.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Not all source media have verified commercial rights; production responsive-image/performance review remains."
+    },
+    {
+      "id": "DS-009",
+      "page": 37,
+      "requirement": "Motion respects reduced-motion settings Operating-system preference test",
+      "status": "I",
+      "implementation": "Reduced-motion CSS removes nonessential animation/smooth scrolling.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-010",
+      "page": 37,
+      "requirement": "Homepage has clear conversion pathways Usability testing",
+      "status": "I",
+      "implementation": "Visible service discovery, RFQ/contact paths and reviewed six-state journey.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "DS-011",
+      "page": 37,
+      "requirement": "Core Web Vitals meet agreed targets Real-user and laboratory measurement",
+      "status": "O",
+      "implementation": "Optimized build and layout checks exist.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "No production p75 LCP≤2.5s, INP≤200ms, CLS≤0.1 or constrained-device performance acceptance has been measured."
+    },
+    {
+      "id": "DS-012",
+      "page": 37,
+      "requirement": "English and Kiswahili layouts remain usable Localization testing",
+      "status": "P",
+      "implementation": "Both languages exercised at four public widths and private core screens.",
+      "evidence": [
+        "app/globals.css",
+        "components/site-shell.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Some technical/error/business text remains in source language; fluent translation and long-copy review remain."
+    },
+    {
+      "id": "DS-013",
+      "page": 37,
+      "requirement": "CMS content does not break layouts Long-text and missing-image testing",
+      "status": "P",
+      "implementation": "CMS schemas bound content and supply missing-media/empty states.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/public-content.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "A complete pathological long-copy/missing-image editorial acceptance campaign is not finished."
+    },
+    {
+      "id": "DS-014",
+      "page": 37,
+      "requirement": "Unapproved services are not publicly displayed Publication-state verification",
+      "status": "I",
+      "implementation": "Public content filters and service withdrawal reject unpublished divisions.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/public-pages.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-01",
+      "page": 40,
+      "requirement": "Home Corporate introduction and conversion Public",
+      "status": "I",
+      "implementation": "Corporate homepage, governed sections and inquiry conversion.",
+      "evidence": [
+        "app/page.tsx",
+        "components/pages.tsx",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-02",
+      "page": 40,
+      "requirement": "About Us Company background, values, leadership and quality Public",
+      "status": "I",
+      "implementation": "About, leadership and quality/safety routes with reviewable source content.",
+      "evidence": [
+        "app/about/page.tsx",
+        "app/about/leadership/page.tsx",
+        "app/about/quality-and-safety/page.tsx"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-03",
+      "page": 40,
+      "requirement": "Services Approved business service catalogue Public",
+      "status": "I",
+      "implementation": "Five service routes with catalogue/FAQ/process/assessment content.",
+      "evidence": [
+        "app/services/[slug]/page.tsx",
+        "components/pages.tsx",
+        "app/services/ict/page.tsx",
+        "app/services/cleaning/page.tsx"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-04",
+      "page": 40,
+      "requirement": "Projects & Portfolio Verified projects, media and case studies Public",
+      "status": "O",
+      "implementation": "Published-only project listing/detail and separate operational/public records.",
+      "evidence": [
+        "app/projects/page.tsx",
+        "app/projects/[slug]/page.tsx",
+        "components/public-content.tsx",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": "Actual approved TOC case studies/media are not supplied; empty states are intentional."
+    },
+    {
+      "id": "SM-05",
+      "page": 40,
+      "requirement": "Clients & Partners Approved references and testimonials Public",
+      "status": "O",
+      "implementation": "Client/partner and testimonial content types, public listing and permission gates.",
+      "evidence": [
+        "app/clients/page.tsx",
+        "components/public-content.tsx",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": "Real references/testimonials require verification and consent."
+    },
+    {
+      "id": "SM-06",
+      "page": 40,
+      "requirement": "News & Insights News, articles and announcements Public",
+      "status": "I",
+      "implementation": "Published news listing/detail, metadata and publication lifecycle.",
+      "evidence": [
+        "app/news/page.tsx",
+        "app/news/[slug]/page.tsx",
+        "lib/public-pages.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-07",
+      "page": 40,
+      "requirement": "Careers & Opportunities Vacancies and approved opportunities Public",
+      "status": "P",
+      "implementation": "Governed career/supplier opportunity listings and secure inquiry/contact handoff.",
+      "evidence": [
+        "app/careers/page.tsx",
+        "app/opportunities/page.tsx",
+        "components/public-content.tsx"
+      ],
+      "remaining": "No applicant-tracking/HR upload/selection system or supplier self-registration is connected."
+    },
+    {
+      "id": "SM-08",
+      "page": 40,
+      "requirement": "Contact & Quotations Inquiries and service requirements Public",
+      "status": "I",
+      "implementation": "Contact and RFQ routes, save-first persistence, receipt and notification queue.",
+      "evidence": [
+        "components/request-form.tsx",
+        "app/api/inquiries/route.ts",
+        "tests/inquiry-route.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-09",
+      "page": 40,
+      "requirement": "Customer Portal Customer-specific business records Authenticated customer",
+      "status": "I",
+      "implementation": "Individual owned-record customer portal with verification and guest claims.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "lib/platform-auth.ts",
+        "app/api/platform/[...path]/route.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SM-10",
+      "page": 40,
+      "requirement": "Administration CMS Staff operations and content control Authorized staff",
+      "status": "I",
+      "implementation": "Role-aware content/commercial/operations/admin workspaces.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "lib/platform-auth.ts",
+        "docs/STAFF-GUIDE.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-001",
+      "page": 48,
+      "requirement": "Main navigation is visible and understandable Visitors can identify primary destinations",
+      "status": "I",
+      "implementation": "Shared clear main navigation and conversion controls.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-002",
+      "page": 48,
+      "requirement": "Services mega menu works on desktop Mouse and keyboard operation",
+      "status": "I",
+      "implementation": "Published-services desktop menu with mouse/keyboard operation.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-003",
+      "page": 48,
+      "requirement": "Mobile drawer works correctly Touch, keyboard and close behavior",
+      "status": "I",
+      "implementation": "Touch/keyboard mobile drawer with close/Escape/focus behavior.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-004",
+      "page": 48,
+      "requirement": "Active page is indicated Correct navigation state",
+      "status": "I",
+      "implementation": "Current pathname/section styling and accessible navigation context.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-005",
+      "page": 48,
+      "requirement": "Breadcrumbs reflect page hierarchy Accurate parent links",
+      "status": "I",
+      "implementation": "Shared breadcrumb component with parent links on public detail paths.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-006",
+      "page": 48,
+      "requirement": "Published services appear in navigation CMS-driven visibility",
+      "status": "I",
+      "implementation": "Visible service catalogue drives service navigation.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-007",
+      "page": 49,
+      "requirement": "Unpublished services remain inaccessible No public content leakage",
+      "status": "I",
+      "implementation": "Unpublished service routes/catalogues/associated knowledge are excluded.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-008",
+      "page": 49,
+      "requirement": "Public pages have valid metadata Correct canonical and social tags",
+      "status": "P",
+      "implementation": "Canonical/social metadata reads governed content; dynamic detail metadata is browser-tested.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Fallbacks/default metadata are partly static/English; locale-specific alternates are not implemented."
+    },
+    {
+      "id": "NAV-009",
+      "page": 49,
+      "requirement": "XML sitemap excludes private routes Only canonical public URLs",
+      "status": "I",
+      "implementation": "Dynamic canonical public sitemap; private/preview indexing is excluded.",
+      "evidence": [
+        "app/sitemap.ts",
+        "app/robots.ts",
+        "lib/public-pages.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-010",
+      "page": 49,
+      "requirement": "Portal requires authentication Unauthenticated requests denied or redirected",
+      "status": "I",
+      "implementation": "Portal UI/account gate and authenticated owned-data APIs.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "app/api/platform/[...path]/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-011",
+      "page": 49,
+      "requirement": "Customer records enforce ownership Cross-customer access rejected",
+      "status": "I",
+      "implementation": "Owned-record checks cover quotes, inquiries, messages, documents and exports.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-documents.ts",
+        "app/api/platform/[...path]/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-012",
+      "page": 49,
+      "requirement": "Admin operations enforce roles Unauthorized actions denied",
+      "status": "I",
+      "implementation": "Role/scope/MFA/delegation validation is server-side, not just menu hiding.",
+      "evidence": [
+        "lib/platform-auth.ts",
+        "app/api/platform/[...path]/route.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-013",
+      "page": 49,
+      "requirement": "Broken links are detected Automated link checks pass",
+      "status": "P",
+      "implementation": "Known route status/image/layout checks and redirect-target validation.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "No exhaustive crawler of all editorial/external links or production link-monitoring service is installed."
+    },
+    {
+      "id": "NAV-014",
+      "page": 49,
+      "requirement": "Old slugs redirect appropriately Valid permanent redirects",
+      "status": "I",
+      "implementation": "Approved permanent redirects, immutable existing slugs, no redirect chains/loops.",
+      "evidence": [
+        "app/api/platform/[...path]/route.ts",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "NAV-015",
+      "page": 49,
+      "requirement": "English/Kiswahili navigation is consistent Correct localized routes",
+      "status": "P",
+      "implementation": "Shared destinations and EN/SW switch work throughout the public shell.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "lib/public-pages.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Language uses a persisted view preference rather than separate /en and /sw canonical routes."
+    },
+    {
+      "id": "HP-001",
+      "page": 65,
+      "requirement": "Homepage loads on mobile and desktop No broken layout",
+      "status": "I",
+      "implementation": "Homepage rendered in both languages at four supported widths.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-002",
+      "page": 65,
+      "requirement": "Hero content comes from CMS Approved edits appear correctly",
+      "status": "I",
+      "implementation": "Published home record governs hero, section sequence, CTAs, crops and captions.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-003",
+      "page": 65,
+      "requirement": "Primary CTA opens Services Correct destination",
+      "status": "I",
+      "implementation": "Default primary hero CTA opens Services.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-004",
+      "page": 65,
+      "requirement": "Secondary CTA opens RFQ Correct destination",
+      "status": "I",
+      "implementation": "Default secondary hero CTA opens the RFQ.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-005",
+      "page": 65,
+      "requirement": "Unapproved services are hidden No public disclosure",
+      "status": "I",
+      "implementation": "Publication-filtered five-service overview and withdrawal rules.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-006",
+      "page": 65,
+      "requirement": "Service cards navigate correctly Valid service pages",
+      "status": "I",
+      "implementation": "Shared cards open corresponding published service routes.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-007",
+      "page": 65,
+      "requirement": "About section links correctly Opens /about",
+      "status": "I",
+      "implementation": "About preview links to /about.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-008",
+      "page": 65,
+      "requirement": "Project cards use verified records No fabricated projects",
+      "status": "O",
+      "implementation": "Featured projects read only separately approved public records.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "No real project evidence has been provided; no fictional TOC work is published."
+    },
+    {
+      "id": "HP-009",
+      "page": 65,
+      "requirement": "Client logos require approval Only authorized assets display",
+      "status": "O",
+      "implementation": "Client/logo records have permission gates.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "TOC must supply and verify actual client permission/licensed logos."
+    },
+    {
+      "id": "HP-010",
+      "page": 65,
+      "requirement": "Gallery is keyboard-accessible Correct viewer behavior",
+      "status": "I",
+      "implementation": "Shared accessible gallery/lightbox with filter, Escape and focus restoration.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-011",
+      "page": 65,
+      "requirement": "Testimonials are genuine Approved records only",
+      "status": "O",
+      "implementation": "Testimonials require attributable verified permission; feedback is not auto-published.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Genuine consented testimonials have not been supplied."
+    },
+    {
+      "id": "HP-012",
+      "page": 65,
+      "requirement": "News shows published articles No drafts displayed",
+      "status": "I",
+      "implementation": "Homepage news uses published articles only.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-013",
+      "page": 65,
+      "requirement": "Contact actions use approved details Correct phone/email/WhatsApp",
+      "status": "O",
+      "implementation": "Contact buttons use central company data; social/WhatsApp links are optional reviewed entries.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Verify source-derived phone/location and company ownership of any future WhatsApp/social account."
+    },
+    {
+      "id": "HP-014",
+      "page": 65,
+      "requirement": "Images load efficiently Performance targets assessed",
+      "status": "O",
+      "implementation": "Local optimized imagery/fonts, sizing and lazy content.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Formal target measurements on production/mobile networks remain unverified."
+    },
+    {
+      "id": "HP-015",
+      "page": 65,
+      "requirement": "Forms protect personal information Security tests pass",
+      "status": "I",
+      "implementation": "Bounded validated save-first forms, private persistence and tested authorization.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-016",
+      "page": 65,
+      "requirement": "English and Kiswahili content works Correct localization",
+      "status": "P",
+      "implementation": "Bilingual home data, language state and responsive layout checks.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Human copy/alt/legal review and language-specific SEO remain."
+    },
+    {
+      "id": "HP-017",
+      "page": 65,
+      "requirement": "Reduced-motion preferences work No forced unnecessary animation",
+      "status": "I",
+      "implementation": "Reduced-motion rules apply to homepage components.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "HP-018",
+      "page": 65,
+      "requirement": "AI failure does not break homepage Graceful fallback",
+      "status": "I",
+      "implementation": "Guide/provider failure never prevents ordinary homepage navigation or inquiry.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-001",
+      "page": 89,
+      "requirement": "Every approved division has a dedicated responsive landing page",
+      "status": "I",
+      "implementation": "All five requested divisions have responsive standalone landing pages.",
+      "evidence": [
+        "app/services/[slug]/page.tsx",
+        "components/pages.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-002",
+      "page": 89,
+      "requirement": "All service pages use shared design components",
+      "status": "I",
+      "implementation": "Shared section/cards/CTA/FAQ/breadcrumb patterns.",
+      "evidence": [
+        "components/pages.tsx",
+        "components/site-shell.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-003",
+      "page": 89,
+      "requirement": "Each division has its own validated inquiry fields",
+      "status": "P",
+      "implementation": "Distinct server-validated fields for every primary division, plus conditional Event→Catering.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Additional divisions route/review together but do not each render a full independent intake; TBC dates are allowed on inquiries."
+    },
+    {
+      "id": "SD-004",
+      "page": 89,
+      "requirement": "Unapproved divisions remain unpublished",
+      "status": "I",
+      "implementation": "Publication/withdrawal controls apply to all five divisions.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-005",
+      "page": 89,
+      "requirement": "All inquiries receive unique reference numbers",
+      "status": "I",
+      "implementation": "Unique saved inquiry references and payload-bound idempotency.",
+      "evidence": [
+        "app/api/inquiries/route.ts",
+        "lib/database.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-006",
+      "page": 89,
+      "requirement": "Requests are assigned to the correct department",
+      "status": "I",
+      "implementation": "Primary/additional department register and scoped staff access.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-auth.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-007",
+      "page": 89,
+      "requirement": "Multi-division requests can be coordinated",
+      "status": "I",
+      "implementation": "One coordinated inquiry, all-division technical/final/booking checks and scoped resources.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-008",
+      "page": 89,
+      "requirement": "Quotations require authorized approval",
+      "status": "I",
+      "implementation": "Independent scoped technical/finance/final commercial gates.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-auth.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-009",
+      "page": 89,
+      "requirement": "Quotation revisions preserve earlier versions",
+      "status": "I",
+      "implementation": "Immutable version snapshots/PDFs and historical issued offers.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/quotation-pdf.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-010",
+      "page": 89,
+      "requirement": "Bookings require explicit operational confirmation",
+      "status": "I",
+      "implementation": "Acceptance remains separate from pending and explicitly confirmed booking.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-011",
+      "page": 89,
+      "requirement": "Customers can access only authorized records",
+      "status": "I",
+      "implementation": "Owned portal/document/quotation checks; scoped staff projection.",
+      "evidence": [
+        "app/api/platform/[...path]/route.ts",
+        "lib/platform-documents.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-012",
+      "page": 89,
+      "requirement": "Uploads are validated and securely stored",
+      "status": "C",
+      "implementation": "Size/signature/re-encoding/quarantine/checksum and access controls.",
+      "evidence": [
+        "lib/platform-documents.ts",
+        "lib/platform-cms.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "A real executable malware scanner with current signatures must be configured/threat-tested; none is active here."
+    },
+    {
+      "id": "SD-013",
+      "page": 89,
+      "requirement": "Galleries contain approved media",
+      "status": "P",
+      "implementation": "CMS gallery publication has rights/permission gates and illustrative labelling.",
+      "evidence": [
+        "components/public-content.tsx",
+        "lib/platform-cms.ts",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Seeded reference imagery is not proven licensed or verified TOC work."
+    },
+    {
+      "id": "SD-014",
+      "page": 89,
+      "requirement": "FAQs are CMS-editable and service-specific",
+      "status": "I",
+      "implementation": "Service-specific inline and managed FAQ records use the CMS lifecycle.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/pages.tsx",
+        "components/public-content.tsx"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-015",
+      "page": 89,
+      "requirement": "Pricing uses approved, versioned rules",
+      "status": "I",
+      "implementation": "Independent dated price books/current rule resolution; no frontend price authority.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "components/estimate-planner.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-016",
+      "page": 89,
+      "requirement": "Audit logs capture important workflow actions",
+      "status": "I",
+      "implementation": "Material workflow actions carry actor/target/reason/version audit evidence.",
+      "evidence": [
+        "lib/platform-store.ts",
+        "lib/platform-audit.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-017",
+      "page": 89,
+      "requirement": "Mobile forms remain usable on constrained networks",
+      "status": "O",
+      "implementation": "Multi-step forms and draft preservation tested at 320px.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Actual low-bandwidth devices/interrupted network usability acceptance remains."
+    },
+    {
+      "id": "SD-018",
+      "page": 89,
+      "requirement": "AI cannot bypass quotation or booking approval",
+      "status": "I",
+      "implementation": "AI gateway has no commercial write/approval/book tools.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "tests/platform.test.ts",
+        "docs/API.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-019",
+      "page": 89,
+      "requirement": "Cleaning jobs support checklists and supervisor review",
+      "status": "I",
+      "implementation": "Recurring visits, completion checklists, issues and assigned-supervisor review.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-020",
+      "page": 89,
+      "requirement": "ICT projects support requirements and acceptance records",
+      "status": "I",
+      "implementation": "Ordered ICT gates retain requirements/design/work/testing/handover/acceptance evidence.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-021",
+      "page": 89,
+      "requirement": "Entertainment resources cannot be double-booked once reservations are implemented",
+      "status": "I",
+      "implementation": "Transactional capacity/overlap/maintenance checks across confirmed work.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "SD-022",
+      "page": 89,
+      "requirement": "The platform supports future services without a complete redesign",
+      "status": "P",
+      "implementation": "Reusable service templates and separated validation/routing/configuration modules.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Adding a sixth division still needs a reviewed enum/field/permission code update; CMS-only arbitrary new divisions are not enabled."
+    },
+    {
+      "id": "QE-001",
+      "page": 101,
+      "requirement": "Backend pricing No authoritative prices hardcoded in frontend",
+      "status": "I",
+      "implementation": "Server resolves approved rules and calculates totals; client rates cannot redefine them.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-002",
+      "page": 101,
+      "requirement": "Service-specific forms Correct fields for each division",
+      "status": "P",
+      "implementation": "Five primary-service schemas and Event→Catering conditional requirements.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Every additional division is not a separate full intake; unknown dates can be flagged for staff confirmation."
+    },
+    {
+      "id": "QE-003",
+      "page": 101,
+      "requirement": "Estimate calculation Accurate under approved pricing rules",
+      "status": "I",
+      "implementation": "Fixed-point nonbinding estimates from current approved public rules.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-004",
+      "page": 101,
+      "requirement": "Unique quotation references No duplicates under concurrent requests",
+      "status": "I",
+      "implementation": "Database sequence/unique constraints allocate quotation references transactionally.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-005",
+      "page": 101,
+      "requirement": "Quotation versioning Previous issued versions preserved",
+      "status": "I",
+      "implementation": "Prior issued quotation versions remain immutable and downloadable to owners.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-006",
+      "page": 101,
+      "requirement": "Approval workflow Unauthorized issuance rejected",
+      "status": "I",
+      "implementation": "Author independence, all-division technical, finance and delegated final/issue gates.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-007",
+      "page": 101,
+      "requirement": "Discount controls Override requires authorization and reason",
+      "status": "I",
+      "implementation": "Discount basis-point ceilings, current authority recheck and recorded reasons.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-008",
+      "page": 101,
+      "requirement": "Tax calculation Approved tax treatment and rounding",
+      "status": "O",
+      "implementation": "Inclusive/exclusive tax, discount rounding and integer bounds are regression-tested.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Actual applicable tax/rates/exemptions and commercial treatment need authorized finance/legal approval."
+    },
+    {
+      "id": "QE-009",
+      "page": 101,
+      "requirement": "Customer acceptance Exact valid quotation version recorded",
+      "status": "I",
+      "implementation": "Owner accepts exact current issued nonexpired version and matching terms.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-010",
+      "page": 101,
+      "requirement": "Booking confirmation Resources and conditions verified",
+      "status": "I",
+      "implementation": "Operational conditions plus transactional resources/full-horizon supplier checks before confirmation/start.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-011",
+      "page": 101,
+      "requirement": "Audit logging All material changes traceable",
+      "status": "I",
+      "implementation": "Quotation/price/action/version/acceptance/booking evidence is retained.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-012",
+      "page": 101,
+      "requirement": "Customer authorization No access to another customer's records",
+      "status": "I",
+      "implementation": "Cross-customer direct API/PDF/offer isolation tests pass.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-013",
+      "page": 101,
+      "requirement": "Operational reporting Accurate metrics from actual records",
+      "status": "P",
+      "implementation": "Reports use actual scoped retained events with distinct denominators and finance nulls.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "No invoicing/collections/traffic attribution/external-reply source is connected; historical cohort limitations are disclosed."
+    },
+    {
+      "id": "QE-014",
+      "page": 101,
+      "requirement": "AI assistance No autonomous commercial approval",
+      "status": "I",
+      "implementation": "Assistance remains unsaved and pricingAuthorized=false; normal reviews cannot be bypassed.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QE-015",
+      "page": 101,
+      "requirement": "Mobile usability Forms usable on low-bandwidth devices",
+      "status": "O",
+      "implementation": "RFQ/commercial layouts exercised at mobile width, draft/retry preservation implemented.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Production low-bandwidth performance/usability sign-off is not established."
+    },
+    {
+      "id": "AI-001",
+      "page": 115,
+      "requirement": "Customer asks about a verified service Accurate, grounded response",
+      "status": "C",
+      "implementation": "Published-only source excerpts and version citations; optional model constrained selection.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Real provider and factual/linguistic evaluation remain unconfigured; rules-based fallback is not mislabelled generative AI."
+    },
+    {
+      "id": "AI-002",
+      "page": 115,
+      "requirement": "Customer asks about an unavailable service No invented capability",
+      "status": "I",
+      "implementation": "No unpublished/unknown service IDs can be selected as a new capability.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-003",
+      "page": 115,
+      "requirement": "Customer requests an exact price without sufficient data No fabricated quotation",
+      "status": "I",
+      "implementation": "No price approval/output tool; uncertain requests hand off to staff and ordinary RFQ.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-004",
+      "page": 115,
+      "requirement": "Customer submits incomplete event details Missing fields identified",
+      "status": "I",
+      "implementation": "Recommendation/inquiry draft identifies missing structured fields for customer review.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-005",
+      "page": 115,
+      "requirement": "Customer uses Kiswahili Appropriate Kiswahili response",
+      "status": "C",
+      "implementation": "Kiswahili approved-source fallback and language-aware provider request.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Native-speaker/provider quality testing and complete diagnostic translation remain."
+    },
+    {
+      "id": "AI-006",
+      "page": 115,
+      "requirement": "User requests an unauthorized discount AI refuses to apply it",
+      "status": "I",
+      "implementation": "Assistant cannot apply discounts or mutate commercial records.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-007",
+      "page": 115,
+      "requirement": "Customer requests another customer's quotation Access denied",
+      "status": "I",
+      "implementation": "Private modules require scoped record access; public retrieval has no customer records.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-008",
+      "page": 115,
+      "requirement": "Malicious text attempts to override system rules No unauthorized tool execution",
+      "status": "I",
+      "implementation": "User/source text is untrusted, model JSON/IDs are validated, and gateway exposes no executable tools.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-009",
+      "page": 115,
+      "requirement": "Published project is withdrawn Removed from public search",
+      "status": "I",
+      "implementation": "Direct published-source retrieval removes withdrawn projects/services immediately.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-010",
+      "page": 116,
+      "requirement": "AI model becomes unavailable Manual inquiry remains functional",
+      "status": "I",
+      "implementation": "Provider errors/invalid output/budgets fall back; ordinary inquiry is independent.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-011",
+      "page": 116,
+      "requirement": "Staff corrects a lead classification Correction is saved and traceable",
+      "status": "I",
+      "implementation": "Reviewed rerouting preserves original payload, clears stale assignment and audits changes.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-012",
+      "page": 116,
+      "requirement": "AI prepares a quotation draft Human approval remains mandatory",
+      "status": "C",
+      "implementation": "Scoped review-only draft assistance with current approved-rate references.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Real model response quality is unverified; human pricing/review/issue remain mandatory."
+    },
+    {
+      "id": "AI-013",
+      "page": 116,
+      "requirement": "Analytics source has missing records Limitations are disclosed",
+      "status": "I",
+      "implementation": "Analytics uses verified operational query output with unavailable-data and denominator disclosure.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "AI-014",
+      "page": 116,
+      "requirement": "Content assistant invents a client Draft fails factual review",
+      "status": "P",
+      "implementation": "Editorial drafts cannot publish themselves and pass through independent evidence review.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "No automatic factual-verification engine; a human must reject invented names/claims. Live model evaluation not completed."
+    },
+    {
+      "id": "AI-015",
+      "page": 116,
+      "requirement": "AI usage exceeds a configured limit Graceful throttling or fallback",
+      "status": "I",
+      "implementation": "UTC attempt budget, redaction, server-only key, safe throttle/fallback and usage records.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-001",
+      "page": 129,
+      "requirement": "Create and edit pages Authorized editor can save drafts",
+      "status": "I",
+      "implementation": "Persistent authorized structured page drafts and bilingual editable fields.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-002",
+      "page": 129,
+      "requirement": "Publishing control Unapproved revisions cannot go live",
+      "status": "I",
+      "implementation": "Live pointer changes only after independent review/authorized publication.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-003",
+      "page": 129,
+      "requirement": "Scheduling Content publishes at the configured time",
+      "status": "C",
+      "implementation": "Scheduled/expired revisions handled by bounded worker and public-content reads.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Production timer/restart/clock behavior has not been validated on a chosen host."
+    },
+    {
+      "id": "CMS-004",
+      "page": 129,
+      "requirement": "Version history Previous revisions remain accessible",
+      "status": "I",
+      "implementation": "Version history retains source/author/approval and previous drafts/live revisions.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-005",
+      "page": 129,
+      "requirement": "Rollback Authorized user can restore prior content",
+      "status": "I",
+      "implementation": "Restore creates a new draft revision; no destructive history overwrite.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-006",
+      "page": 129,
+      "requirement": "Media protection Unauthorized uploads and downloads blocked",
+      "status": "C",
+      "implementation": "Scoped private upload/quarantine/download and published-reference gates.",
+      "evidence": [
+        "lib/platform-documents.ts",
+        "lib/platform-cms.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Deploy and validate the real malware scanner and private persistent storage."
+    },
+    {
+      "id": "CMS-007",
+      "page": 129,
+      "requirement": "Department permissions Managers access only authorized records",
+      "status": "I",
+      "implementation": "Corporate versus department content and staff business access are scoped server-side.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-008",
+      "page": 129,
+      "requirement": "Customer isolation Customers cannot access other customers' data",
+      "status": "I",
+      "implementation": "Customer-only projections and ownership checks cover portal/export/files.",
+      "evidence": [
+        "app/api/platform/[...path]/route.ts",
+        "lib/platform-documents.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-009",
+      "page": 129,
+      "requirement": "Pricing separation CMS edits cannot bypass pricing approvals",
+      "status": "I",
+      "implementation": "Content editing cannot approve rate books, commercial offers or bookings.",
+      "evidence": [
+        "lib/platform-auth.ts",
+        "lib/platform-business.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-010",
+      "page": 129,
+      "requirement": "MFA Privileged users must complete MFA",
+      "status": "I",
+      "implementation": "Encrypted replay-resistant TOTP is mandatory for privileged sessions.",
+      "evidence": [
+        "lib/platform-auth.ts",
+        "components/platform-account.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-011",
+      "page": 129,
+      "requirement": "Audit logging Sensitive actions produce traceable records",
+      "status": "I",
+      "implementation": "Sensitive publication/access/business/download/rights actions leave private audit evidence.",
+      "evidence": [
+        "lib/platform-store.ts",
+        "lib/platform-audit.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-012",
+      "page": 129,
+      "requirement": "Dashboard accuracy KPIs match verified database queries",
+      "status": "P",
+      "implementation": "Dashboard/report KPIs are derived from scoped database records and tested cohorts.",
+      "evidence": [
+        "lib/platform-crm.ts",
+        "lib/platform-operations.ts",
+        "components/platform-management.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "External financial, visitor/marketing and full historical outcome sources remain absent."
+    },
+    {
+      "id": "CMS-013",
+      "page": 129,
+      "requirement": "AI knowledge governance Only approved content reaches public AI",
+      "status": "I",
+      "implementation": "Approved knowledge uses only current published records with revision provenance.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-cms.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-014",
+      "page": 129,
+      "requirement": "Mobile responsiveness Admin workflows remain usable on supported devices",
+      "status": "I",
+      "implementation": "18 role-capability screens exercised on desktop/mobile with selected action flows.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "scripts/blueprint-browser-check.mjs",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-015",
+      "page": 129,
+      "requirement": "Recovery Backup restoration successfully tested",
+      "status": "I",
+      "implementation": "Online SQLite snapshot plus isolated DB/document restoration regression passes.",
+      "evidence": [
+        "scripts/backup.mts",
+        "tests/platform.test.ts",
+        "docs/OPERATIONS.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "CMS-016",
+      "page": 129,
+      "requirement": "Accessibility Target WCAG 2.2 AA for relevant interfaces",
+      "status": "O",
+      "implementation": "Explicit labels/focus/keyboard/reduced motion and sampled Axe checks.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Manual assistive-tech/contrast/content WCAG 2.2 AA acceptance is still required."
+    },
+    {
+      "id": "CMS-017",
+      "page": 129,
+      "requirement": "Concurrency Conflicting edits cannot silently overwrite changes",
+      "status": "P",
+      "implementation": "CMS/drafts/CRM/resources/suppliers/bookings/visits/milestones/settings use optimistic versions.",
+      "evidence": [
+        "lib/platform-drafts.ts",
+        "lib/platform-suppliers.ts",
+        "lib/platform-operations.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Not every independent profile/account-access operation is versioned; full concurrency/security acceptance remains."
+    },
+    {
+      "id": "CMS-018",
+      "page": 129,
+      "requirement": "Unpublishing Withdrawn content is removed from public access and AI retrieval",
+      "status": "I",
+      "implementation": "Withdrawn service/content removed from public endpoints, associated rates and live AI retrieval.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx",
+        "tests/platform.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-001",
+      "page": 141,
+      "requirement": "Navigation All approved routes and links work",
+      "status": "P",
+      "implementation": "Known canonical/public/alias/private paths and redirects are exercised.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Full content/external-link crawler and live-domain checks are not established."
+    },
+    {
+      "id": "QA-002",
+      "page": 141,
+      "requirement": "Responsive design Mobile, tablet and desktop layouts are usable",
+      "status": "I",
+      "implementation": "Four public widths/both languages plus private desktop/mobile layouts checked.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-003",
+      "page": 141,
+      "requirement": "Forms Valid submissions are stored and acknowledged",
+      "status": "C",
+      "implementation": "Save-first reference/queue/delivery behavior has unit/browser coverage.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Live SMTP authentication and actual customer/staff mailbox receipt remain unverified."
+    },
+    {
+      "id": "QA-004",
+      "page": 141,
+      "requirement": "CMS Authorized editors can manage and publish content",
+      "status": "I",
+      "implementation": "Draft/review/publication/version/preview workflows covered locally.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-005",
+      "page": 141,
+      "requirement": "RBAC Unauthorized access is rejected",
+      "status": "I",
+      "implementation": "Ownership/role/scope/MFA/delegation/API negative tests pass.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-006",
+      "page": 141,
+      "requirement": "Quotation workflow Pricing, approval and versioning work correctly",
+      "status": "I",
+      "implementation": "Calculation, independent approvals, exact versions, PDFs and acceptance regressions.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-007",
+      "page": 141,
+      "requirement": "Booking No unauthorized or duplicate booking confirmation",
+      "status": "I",
+      "implementation": "Separate confirmation, unique version relationship, transactional capacity and supervisor gates.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-008",
+      "page": 141,
+      "requirement": "Media Images and videos load efficiently",
+      "status": "P",
+      "implementation": "Optimized local WebP/fonts, intact browser images and consent-safe video links.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "No production video delivery/low-bandwidth Core Web Vitals acceptance or complete media-rights approval."
+    },
+    {
+      "id": "QA-009",
+      "page": 141,
+      "requirement": "SEO Metadata, sitemap and indexing controls are correct",
+      "status": "P",
+      "implementation": "Dynamic canonical/social metadata, published sitemap, noindex preview/private routes.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Locale SEO/hreflang/defaults and final-domain crawl need completion/review."
+    },
+    {
+      "id": "QA-010",
+      "page": 141,
+      "requirement": "Security Agreed OWASP controls pass verification",
+      "status": "O",
+      "implementation": "Bounded APIs, MFA/roles, signature/quarantine, TLS settings, safe errors and dependency audit.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "No independent OWASP penetration test/security certification or host hardening acceptance."
+    },
+    {
+      "id": "QA-011",
+      "page": 141,
+      "requirement": "Privacy Notices, retention and data rights processes are implemented",
+      "status": "P",
+      "implementation": "Notices/consent version, owned export, draft expiry and manual identity-attested rights review.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Legal policy approval and general retention/erasure/mailbox/backup executor/process are not complete."
+    },
+    {
+      "id": "QA-012",
+      "page": 141,
+      "requirement": "Backups A representative restoration test succeeds",
+      "status": "I",
+      "implementation": "Representative online backup and isolated database/document restore has passed.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "QA-013",
+      "page": 141,
+      "requirement": "Accessibility Agreed WCAG 2.2 AA criteria pass",
+      "status": "O",
+      "implementation": "Sampled Axe WCAG checks report no violations; keyboard/focus behavior tested.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Not a full manual WCAG 2.2 AA conformance assessment."
+    },
+    {
+      "id": "QA-014",
+      "page": 141,
+      "requirement": "AI Responses remain within approved knowledge and permissions",
+      "status": "C",
+      "implementation": "Published/authorized source and no-commercial-action rules are tested with controlled providers.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "tests/platform.test.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": "Real-model adversarial, factual, bilingual and production data-processing acceptance remains."
+    },
+    {
+      "id": "QA-015",
+      "page": 141,
+      "requirement": "Monitoring Logs, alerts and error reporting function",
+      "status": "P",
+      "implementation": "Safe request IDs/worker history/outbox diagnostics and read-only ops health checker.",
+      "evidence": [
+        "lib/platform-monitoring.ts",
+        "scripts/check-operations.mts",
+        "tests/monitoring.test.ts",
+        "docs/OPERATIONS.md"
+      ],
+      "remaining": "No live external alert destination/log aggregation/on-call or alert-delivery rehearsal is configured."
+    },
+    {
+      "id": "QA-016",
+      "page": 141,
+      "requirement": "Documentation Deployment and administration instructions are complete",
+      "status": "I",
+      "implementation": "API, deployment templates, operations/staff/design guides and page-referenced coverage delivered.",
+      "evidence": [
+        "docs/API.md",
+        "docs/STAFF-GUIDE.md",
+        "docs/DESIGN-HANDOVER.md",
+        "infrastructure/README.md",
+        "tests/documentation.test.ts"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-001",
+      "page": 157,
+      "requirement": "Consistent TOC identity Approved design-system review",
+      "status": "O",
+      "implementation": "Shared TOC wordmark/shell and design tokens.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Official artwork/palette and management design review are not approved."
+    },
+    {
+      "id": "UX-002",
+      "page": 157,
+      "requirement": "Clear navigation Users locate key services successfully",
+      "status": "I",
+      "implementation": "Service discovery/navigation/RFQ/contact paths and keyboard menu flows.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-003",
+      "page": 157,
+      "requirement": "Responsive layout Tested across supported viewports",
+      "status": "I",
+      "implementation": "Responsive layout checks across supported widths and languages.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-004",
+      "page": 157,
+      "requirement": "Service-specific RFQ Correct fields appear by service",
+      "status": "P",
+      "implementation": "Distinct five-division primary RFQ and conditional Catering support.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Full separate additional-division intake and strict mandatory initial dates differ from the document."
+    },
+    {
+      "id": "UX-005",
+      "page": 157,
+      "requirement": "Accessible forms Labels, errors and focus tested",
+      "status": "I",
+      "implementation": "Explicit field IDs, labels/hints/errors, focus and sampled accessibility checks.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-shared.tsx",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-006",
+      "page": 157,
+      "requirement": "Customer portal clarity Users locate own requests and quotations",
+      "status": "I",
+      "implementation": "Eight customer screens with owned inquiries/issued offers/documents and delivery timeline.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-007",
+      "page": 157,
+      "requirement": "Role-aware administration Screens reflect authorized functions",
+      "status": "I",
+      "implementation": "Capability-aware sidebar/actions and independent server authorization.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-008",
+      "page": 157,
+      "requirement": "Content editor usability Staff update content without coding",
+      "status": "I",
+      "implementation": "Structured CMS editor with autosave/history/device/language preview; no coding needed for supported content.",
+      "evidence": [
+        "components/platform-cms-ui.tsx",
+        "lib/platform-cms.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-009",
+      "page": 157,
+      "requirement": "AI transparency AI disclosure and escalation available",
+      "status": "I",
+      "implementation": "AI/rules disclosure, revision sources, limits and human contact/escalation.",
+      "evidence": [
+        "components/public-content.tsx",
+        "lib/platform-ai.ts",
+        "components/platform-management.tsx"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-010",
+      "page": 157,
+      "requirement": "Loading and error states All critical journeys have defined states",
+      "status": "I",
+      "implementation": "Loading/empty/validation/permission/conflict/failure/saved-only/preview/quarantine states in critical journeys.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-011",
+      "page": 157,
+      "requirement": "Bilingual support English/Kiswahili content and layouts tested",
+      "status": "P",
+      "implementation": "EN/SW public flows and selected private reports/previews exercised.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Not every technical/error/diagnostic string and SEO locale is translated; human review required."
+    },
+    {
+      "id": "UX-012",
+      "page": 157,
+      "requirement": "Performance Real-user and lab performance verified",
+      "status": "O",
+      "implementation": "Production compilation and responsive browser checks pass.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Lab/RUM performance thresholds on the final domain/device/network are not verified."
+    },
+    {
+      "id": "UX-013",
+      "page": 157,
+      "requirement": "Quotation integrity Acceptance tied to approved version",
+      "status": "I",
+      "implementation": "Customer action records exact current issued version/terms; never automatic confirmation.",
+      "evidence": [
+        "components/platform-quotations.tsx",
+        "lib/platform-business.ts",
+        "scripts/blueprint-browser-check.mjs"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "UX-014",
+      "page": 157,
+      "requirement": "Brand consistency Components use approved design tokens",
+      "status": "O",
+      "implementation": "Reusable CSS tokens and shared public/private components.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Final brand/design-system acceptance is a TOC management decision."
+    },
+    {
+      "id": "UX-015",
+      "page": 157,
+      "requirement": "Handover Design files, components and specifications delivered",
+      "status": "P",
+      "implementation": "Editable code components/tokens, design specification and standalone HTML preview supplied.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-app.tsx",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "No separate Figma/Adobe source design file, official logo package or signed usability/handover acceptance is supplied."
+    }
+  ],
+  "narrative": [
+    {
+      "id": "N01",
+      "pages": [
+        1,
+        3
+      ],
+      "status": "P",
+      "subject": "Project charter, source precedence and implementation scope",
+      "implementation": "The owner requested all releases and inclusion of ICT/Cleaning. Source-derived identity remains reviewable, not invented. Code/docs replace a separate signed BRD/SRS package.",
+      "evidence": [
+        "README.md",
+        "docs/API.md"
+      ],
+      "remaining": "Formal business/design/operational sign-off is not supplied."
+    },
+    {
+      "id": "N02",
+      "pages": [
+        4,
+        12
+      ],
+      "status": "P",
+      "subject": "Capabilities, requirements, data architecture, roadmap and success metrics",
+      "implementation": "One modular application connects public discovery, shared inquiries, CMS, commercial workflows, delivery, portal and governed assistance. The API/data relationship contract is documented.",
+      "evidence": [
+        "docs/API.md",
+        "lib/platform-store.ts",
+        "docs/OPERATIONS.md"
+      ],
+      "remaining": "SQLite/private local storage is an explicit single-node alternative, not PostgreSQL/object storage. No traffic attribution, invoice/payment service or production SLA evidence."
+    },
+    {
+      "id": "N03",
+      "pages": [
+        13,
+        16
+      ],
+      "status": "O",
+      "subject": "Corporate master record and profile reconciliation",
+      "implementation": "Central company record, source references, shared identity and honest withheld ambiguous legal/postal details.",
+      "evidence": [
+        "lib/content.ts",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": "Official branding/legal/contact verification remains TOC-owned; no fake certificates or addresses."
+    },
+    {
+      "id": "N04",
+      "pages": [
+        17,
+        24
+      ],
+      "status": "P",
+      "subject": "Service taxonomy, content lifecycle, approval/evidence register",
+      "implementation": "Five divisions per user instruction; independent source-traceable editorial revisions and protected references.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/platform-store.ts",
+        "components/platform-cms-ui.tsx"
+      ],
+      "remaining": "Real service capacity, client consent and source-media commercial rights require approval; no real project/testimonial data is invented."
+    },
+    {
+      "id": "N05",
+      "pages": [
+        25,
+        37
+      ],
+      "status": "P",
+      "subject": "Brand, typography, grid, components, motion and accessibility/performance",
+      "implementation": "Shared public/private tokens and components, locally hosted fonts, responsive views, keyboard/focus, reduced motion and bilingual form design.",
+      "evidence": [
+        "app/globals.css",
+        "app/platform.css",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Official logo/palette and full manual WCAG/performance/long-content testing not signed off."
+    },
+    {
+      "id": "N06",
+      "pages": [
+        38,
+        49
+      ],
+      "status": "P",
+      "subject": "Complete public/portal/admin IA, routes, navigation, sitemap and SEO",
+      "implementation": "Public corporate/editorial routes, eight owned-customer and 18 staff screens, service aliases, published permanent redirects, dynamic public sitemap and private noindex.",
+      "evidence": [
+        "app/sitemap.ts",
+        "app/robots.ts",
+        "lib/public-pages.ts",
+        "components/platform-app.tsx"
+      ],
+      "remaining": "Language is a persisted EN/SW view, not locale-specific URLs/hreflang. Metadata fallbacks partly static; exhaustive editorial/external link crawl absent."
+    },
+    {
+      "id": "N07",
+      "pages": [
+        50,
+        56
+      ],
+      "status": "O",
+      "subject": "Home hero, five services, About, differentiators, projects/clients and process",
+      "implementation": "Governed hero/CTAs/section sequence, all five divisions and transparent inquiry→review→commitment process. Verified-record sections remain empty until evidence is approved.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-store.ts"
+      ],
+      "remaining": "TOC must supply verified case studies/logos, approved differentiators, final identity and hero/media rights."
+    },
+    {
+      "id": "N08",
+      "pages": [
+        57,
+        65
+      ],
+      "status": "P",
+      "subject": "Gallery/testimonials/news/contact, CMS models, AI and homepage NFRs",
+      "implementation": "Illustrative labels, keyboard gallery, published-only editorial additions, shared company contact and optional source-grounded guide.",
+      "evidence": [
+        "components/pages.tsx",
+        "lib/platform-ai.ts",
+        "lib/platform-cms.ts"
+      ],
+      "remaining": "Existing design imagery is not proven licensed; no actual p75 CWV/RUM target evidence or production privacy/security certification."
+    },
+    {
+      "id": "N09",
+      "pages": [
+        66,
+        70
+      ],
+      "status": "P",
+      "subject": "Unified service rules and Events intake, packages, quotations and booking",
+      "implementation": "Events occasion/date/TBC/alternative/region/attendance, Catering conditional, coordination details, package content and independent multi-division commercial/operations checks.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "components/request-form.tsx",
+        "lib/platform-business.ts"
+      ],
+      "remaining": "Unknown dates are allowed for inquiry/discovery, unlike the strict final-date table. Additional divisions do not each have a full separate RFQ; package/complex stage layouts are human-scoped."
+    },
+    {
+      "id": "N10",
+      "pages": [
+        71,
+        74
+      ],
+      "status": "P",
+      "subject": "Catering catalogue, menu/rates, dietary safety and delivery",
+      "implementation": "Governed menu content supports unit/dietary/allergen/availability; inquiry collects meal/style/logistics/staff/site/dietary requirements; approved backend rates and delivery review.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "lib/service-fields.ts",
+        "lib/platform-business.ts"
+      ],
+      "remaining": "No TOC menu/prices/capacity have been supplied. Menu content is not a full inventory/allergen-approval system or a separate menu-item-order workflow; actual food safety remains operational."
+    },
+    {
+      "id": "N11",
+      "pages": [
+        75,
+        77
+      ],
+      "status": "P",
+      "subject": "Cleaning services, structured assessment and recurring quality",
+      "implementation": "Standalone Cleaning page/validation/routing/mail/quotes; property/area/floors/frequency/region/start/TBC/inspection/supplies/access. Separate recurring visits, checklists, supervisor review, issues and private post-completion feedback.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "components/platform-operations-ui.tsx"
+      ],
+      "remaining": "Supporting photos use authenticated post-inquiry quarantine. Custom checklist/SLA/rescheduling/inspection appointment automation is not complete; no hazardous-specialist capability claims."
+    },
+    {
+      "id": "N12",
+      "pages": [
+        78,
+        80
+      ],
+      "status": "O",
+      "subject": "ICT problem-driven intake, delivery gates and written authorization",
+      "implementation": "ICT category/problem/environment/users/urgency/consultation/delivery/budget, secure post-inquiry uploads, no credential request, seven sequential gates and private/public evidence separation.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "lib/platform-documents.ts"
+      ],
+      "remaining": "Actual competencies, signed testing authorization, acceptance documents, training/support terms and emergency/SLA arrangements require staff/legal verification; free-text evidence is not a legal signature verifier."
+    },
+    {
+      "id": "N13",
+      "pages": [
+        81,
+        83
+      ],
+      "status": "O",
+      "subject": "Entertainment catalogue, equipment and production safeguards",
+      "implementation": "Technical preferences incl. sound/light/LED/photo/video/livestream, power/timing/venue restrictions, owned/hired/partner register, suppliers, maintenance, permits/rights/rigging/crew checks and explicit commitments.",
+      "evidence": [
+        "lib/service-fields.ts",
+        "lib/platform-operations.ts",
+        "lib/platform-suppliers.ts"
+      ],
+      "remaining": "Real equipment/capacity/ownership, personnel competence and safety/permit evidence must be supplied. Public catalogue is never date-specific availability."
+    },
+    {
+      "id": "N14",
+      "pages": [
+        84,
+        89
+      ],
+      "status": "P",
+      "subject": "Unified schema, RBAC, service API and expansion",
+      "implementation": "Shared identity/work/commercial/operations models, server scope/ownership, public/private projections and tests. All requested five divisions integrated.",
+      "evidence": [
+        "lib/platform-store.ts",
+        "lib/platform-auth.ts",
+        "docs/API.md"
+      ],
+      "remaining": "Schema is a custom SQLite implementation, not every recommended table/framework verbatim. Adding arbitrary CMS-only sixth divisions requires a reviewed code/config extension."
+    },
+    {
+      "id": "N15",
+      "pages": [
+        90,
+        94
+      ],
+      "status": "O",
+      "subject": "Quotation UI, approved rates and fixed-point formulae",
+      "implementation": "Server-side approved dated rules, quantity/tax/discount bounds, current-rule estimator, detailed immutable item totals and human manual-pricing reasons.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "components/estimate-planner.tsx",
+        "components/platform-quotations.tsx"
+      ],
+      "remaining": "No real rates/tax/exemptions/discount policy are approved here. Human finance must authorize regional/logistics/staff/transport lines and contractual terms."
+    },
+    {
+      "id": "N16",
+      "pages": [
+        95,
+        98
+      ],
+      "status": "P",
+      "subject": "Reviews, revisions, acceptance and transactional resource booking",
+      "implementation": "Independent per-division technical/finance/final gates and issuance recheck; exact-version terms/expiry acceptance; one pending booking per accepted version, explicit safety/conditions and supplier/capacity maintenance checks at confirm/start.",
+      "evidence": [
+        "lib/platform-business.ts",
+        "lib/platform-operations.ts",
+        "lib/platform-suppliers.ts"
+      ],
+      "remaining": "No payment processing/refund/reconciliation engine. Resource holds conservatively cover whole contract horizons; advanced interval/rescheduling UI is not delivered."
+    },
+    {
+      "id": "N17",
+      "pages": [
+        99,
+        101
+      ],
+      "status": "P",
+      "subject": "Commercial funnel, operational and financial reporting",
+      "implementation": "EAT inquiry cohorts, human qualification/loss, meaningful-response coverage, quotation turnaround, distinct offers/booking metrics, audit filters and disclosed null finance.",
+      "evidence": [
+        "lib/platform-operations.ts",
+        "lib/platform-crm.ts",
+        "components/platform-management.tsx"
+      ],
+      "remaining": "Reports use retained in-platform messages/current outcomes, not external mailbox replies, visitor/marketing attribution, invoicing/collections or complete historical assessment snapshots."
+    },
+    {
+      "id": "N18",
+      "pages": [
+        102,
+        105
+      ],
+      "status": "C",
+      "subject": "AI assistance, recommendation/inquiry prep and quotation drafting",
+      "implementation": "Published-only revision-cited guidance/recommend/inquiry review and staff scoped unsaved structured quotation scope/questions/current-approved rule references; no approval tools.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "components/public-content.tsx",
+        "components/platform-quotations.tsx"
+      ],
+      "remaining": "Real generative provider/model/key/processor approval and live quality checks absent; non-generative fallback is explicit."
+    },
+    {
+      "id": "N19",
+      "pages": [
+        106,
+        110
+      ],
+      "status": "P",
+      "subject": "Editorial/translation/classification/analytics/portfolio AI capabilities",
+      "implementation": "Nine gateway IDs map to eight capabilities: chat is customer assistance; recommend/inquiry-draft together provide recommendation and inquiry preparation; quotation-draft, content-draft, translate, classify, analytics and portfolio map to the other six. Portfolio uses published records, analytics uses verified scoped metrics and staff review classification corrections.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "components/platform-management.tsx"
+      ],
+      "remaining": "Translation/content require provider configuration and independent factual review; no automatic factual verifier, calibrated classification confidence or live-model evaluation dataset is completed."
+    },
+    {
+      "id": "N20",
+      "pages": [
+        111,
+        116
+      ],
+      "status": "C",
+      "subject": "AI journey, source governance, withdrawal, security, budgets and QA",
+      "implementation": "Original requirements retained; user/source text untrusted, allowed JSON/IDs validated, no executable model tools, redaction, attempt budget, audit and provider-failure fallback. Direct current-source retrieval replaces a separate vector index.",
+      "evidence": [
+        "lib/platform-ai.ts",
+        "lib/platform-cms.ts",
+        "tests/platform.test.ts"
+      ],
+      "remaining": "Live provider, model-specific safety, processor/transfer approval, native-language quality and real token/cost monitoring remain unverified. Attempt cap is not a currency-denominated budget."
+    },
+    {
+      "id": "N21",
+      "pages": [
+        117,
+        119
+      ],
+      "status": "I",
+      "subject": "Mandatory CMS/editorial lifecycle and content types",
+      "implementation": "17 structured types, bilingual editor/autosave, draft/review/live revision pointers, independent publication, schedule/expire, restore, withdraw, media/SEO/crops/navigation.",
+      "evidence": [
+        "lib/platform-cms.ts",
+        "components/platform-cms-ui.tsx"
+      ],
+      "remaining": "All global business/media/host approval gates still apply; this is a custom CMS alternative."
+    },
+    {
+      "id": "N22",
+      "pages": [
+        120,
+        126
+      ],
+      "status": "P",
+      "subject": "Roles, department/commercial authority, dashboards, knowledge and audit",
+      "implementation": "Scoped RBAC/MFA and delegated ceilings, staff invitations/access/recovery, roles-aware screens, live published knowledge, current cohort reports and UTC full-history audit filters/pagination.",
+      "evidence": [
+        "lib/platform-auth.ts",
+        "lib/platform-audit.ts",
+        "lib/platform-crm.ts",
+        "components/platform-management.tsx"
+      ],
+      "remaining": "Application audit is not WORM/offsite evidence; date-filtered history is processed in memory. Full access lifecycle, immutable permission-edit concurrency, historical/traffic/financial/AI-performance reports remain operational/scale work."
+    },
+    {
+      "id": "N23",
+      "pages": [
+        127,
+        130
+      ],
+      "status": "P",
+      "subject": "Administration API, staff/customer integration, reliability and technology",
+      "implementation": "Documented same-origin API with guarded modules; customer-only projections, worker/outbox, optimistic major entity edits, additive migration/backup tooling.",
+      "evidence": [
+        "docs/openapi.json",
+        "docs/API.md",
+        "lib/platform-jobs.ts"
+      ],
+      "remaining": "Not every profile/access update is optimistic-versioned; no managed PostgreSQL/object storage adapter, live scheduler/scanner/restore/alerts or compliance sign-off."
+    },
+    {
+      "id": "N24",
+      "pages": [
+        131,
+        133
+      ],
+      "status": "P",
+      "subject": "Guest CRM, portal, organizations and notifications",
+      "implementation": "Shared account/individual inquiry claims, profile/requests/quotes/bookings/projects/docs/messages/feedback, transactional notification queue and source/follow-up/outcome tracking.",
+      "evidence": [
+        "components/platform-app.tsx",
+        "lib/platform-business.ts",
+        "lib/platform-mail.ts"
+      ],
+      "remaining": "Organization name is not organization membership/shared-access management. External SMS/WhatsApp/CRM/calendar/mailbox threading and full enterprise task/activity management are not connected."
+    },
+    {
+      "id": "N25",
+      "pages": [
+        134,
+        136
+      ],
+      "status": "P",
+      "subject": "Deployment, DB/API engineering, repository and security architecture",
+      "implementation": "Single-node modular monolith, explicit API request schemas, unique/foreign-key constraints, transactions, indexes, idempotency, safe output, private files, account/MFA/rate/origin boundaries and deployment examples.",
+      "evidence": [
+        "docs/API.md",
+        "lib/platform-api-schema.ts",
+        "app/api/platform/[...path]/route.ts",
+        "tests/documentation.test.ts",
+        "infrastructure/README.md"
+      ],
+      "remaining": "No distributed job/rate limit, PostgreSQL/object store implementation, enforceable production CSP/HSTS/WAF, external telemetry or independently provisioned hardened host."
+    },
+    {
+      "id": "N26",
+      "pages": [
+        137,
+        137
+      ],
+      "status": "P",
+      "subject": "Threats, Tanzania privacy, accessibility and commercial SEO",
+      "implementation": "Privacy notice/version, bounded fields, private ownership, data export/manual rights reviews, draft expiry, threat/runbook notes, relevant metadata and public service content.",
+      "evidence": [
+        "docs/OPERATIONS.md",
+        "lib/platform-privacy.ts",
+        "lib/public-pages.ts"
+      ],
+      "remaining": "Lawful bases/retention/transfers/processor contracts, general erasure/mailbox/backups, manual WCAG/security and locale SEO acceptance need completion."
+    },
+    {
+      "id": "N27",
+      "pages": [
+        138,
+        138
+      ],
+      "status": "P",
+      "subject": "Search/conversion/social and real-user performance targets",
+      "implementation": "Discover→service→RFQ→reviewed commercial workflow, contact/action links, governed social/optional WhatsApp, optimized local assets and preview noindex.",
+      "evidence": [
+        "components/site-shell.tsx",
+        "app/sitemap.ts",
+        "app/globals.css"
+      ],
+      "remaining": "No external visitor/conversion analytics, p75 CWV, approved social account/provider, paid campaign or low-bandwidth production measurement."
+    },
+    {
+      "id": "N28",
+      "pages": [
+        139,
+        140
+      ],
+      "status": "P",
+      "subject": "Three phases, payments/operations, implementation and annual budgets",
+      "implementation": "Scope extends beyond public MVP to accounts/CMS/quotes/advanced delivery/governed assistance. Settings correctly identify payment/messaging/analytics as unconfigured.",
+      "evidence": [
+        "README.md",
+        "app/api/platform/[...path]/route.ts",
+        "docs/OPERATIONS.md"
+      ],
+      "remaining": "Payments/invoicing/reconciliation/refunds, online payment statuses/webhooks and real provider/hosting/annual operating budget approvals are not implemented/approved. Blueprint costs are illustrative, not a TOC quote."
+    },
+    {
+      "id": "N29",
+      "pages": [
+        141,
+        144
+      ],
+      "status": "P",
+      "subject": "Testing/definition of done, security acceptance and engineering handover",
+      "implementation": "Unit/API/browser/portable checks, negative authorization, build/dependency audit, isolated backup/bootstrap/migration tests, API/deployment/operations/staff/design/coverage docs.",
+      "evidence": [
+        "QA-RESULTS.md",
+        "LAUNCH-CHECKLIST.md",
+        "tests/documentation.test.ts",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Not a signed production Definition of Done: manual UAT/WCAG/security/performance, host/provider tests, official design artefacts and management/legal acceptance remain."
+    },
+    {
+      "id": "N30",
+      "pages": [
+        145,
+        150
+      ],
+      "status": "P",
+      "subject": "Detailed public UI/design system, five service patterns and responsive crops",
+      "implementation": "Corporate rather than SaaS-first shell, five service layouts, typography/grid/tokens, appropriate ICT/Cleaning illustrative art, CMS desktop/mobile image crop/alt/caption and clear RFQ paths.",
+      "evidence": [
+        "components/pages.tsx",
+        "app/globals.css",
+        "lib/platform-cms.ts",
+        "docs/DESIGN-HANDOVER.md"
+      ],
+      "remaining": "Official brand/media/content approval, native device usability and separate source design-file package remain."
+    },
+    {
+      "id": "N31",
+      "pages": [
+        151,
+        153
+      ],
+      "status": "P",
+      "subject": "Six-state RFQ, customer quote/project, admin editor and assistant UX",
+      "implementation": "Five editable RFQ steps plus receipt, review/consent/drafts, immutable offer tables/PDF/acceptance, safe progress, capability-aware admin, CMS autosave/device-language preview and review-only AI UI.",
+      "evidence": [
+        "components/request-form.tsx",
+        "components/platform-quotations.tsx",
+        "components/platform-cms-ui.tsx",
+        "components/platform-app.tsx"
+      ],
+      "remaining": "No online payment/negotiation chat integration or signed customer milestone acceptance UI; detailed additional-division intake and real user training remain."
+    },
+    {
+      "id": "N32",
+      "pages": [
+        154,
+        159
+      ],
+      "status": "P",
+      "subject": "Complete screen inventory, shared states, responsive/security/accessible UX and design handover",
+      "implementation": "Public/auth/customer/admin and shared loading/empty/error/forbidden/conflict/saved/preview/quarantine states, keyboard/forms, both-language layout checks, code component/token and portable handover.",
+      "evidence": [
+        "docs/DESIGN-HANDOVER.md",
+        "scripts/blueprint-browser-check.mjs",
+        "scripts/portable-browser-check.mjs"
+      ],
+      "remaining": "No independent Figma/Adobe file or signed usability/brand/translation/WCAG/performance acceptance. Source code/HTML is not a production deployment or business approval."
+    }
+  ],
+  "openItems": [
+    {
+      "id": "G01",
+      "subject": "Business, branding and evidence",
+      "state": "TOC approval",
+      "detail": "Official identity/contact/logo/palette, service capability/staffing/equipment/safety, licensed media, genuine projects/clients/testimonials and approved tax/pricing/contract policies must be supplied. Illustrative assets and QA records prove nothing."
+    },
+    {
+      "id": "G02",
+      "subject": "Live host and integrations",
+      "state": "Configuration + operational validation",
+      "detail": "SMTP password/real mailbox receipt, supervised jobs, reviewed executable scanner, optional AI provider/processor/budget, HTTPS/secrets/persistent storage, alert destination/offsite backup/restore remain unconfigured or unverified."
+    },
+    {
+      "id": "G03",
+      "subject": "Payments/accounting/third-party messaging",
+      "state": "Not implemented/connected",
+      "detail": "No payment-provider checkout/webhook/signature/reconciliation/refund or invoice/collections service, SMS/WhatsApp sending, external traffic analytics or HR integration. These require an approved provider/data/consent/workflow decision and additional implementation—not just a secret."
+    },
+    {
+      "id": "G04",
+      "subject": "Single-node infrastructure alternative",
+      "state": "Architecture decision required",
+      "detail": "SQLite/private filesystem/custom CMS are implemented, not managed PostgreSQL/object storage or a distributed queue/rate limiter. Multi-instance/serverless scaling needs adapter/migration/lease/authorization/recovery work."
+    },
+    {
+      "id": "G05",
+      "subject": "Localization/SEO completeness",
+      "state": "Partial implementation",
+      "detail": "Core content/views are bilingual; locale-specific routes/hreflang/full translated metadata/technical errors/diagnostics and fluent human acceptance are unfinished. Original customer/evidence text must remain untouched."
+    },
+    {
+      "id": "G06",
+      "subject": "Intake exact parity",
+      "state": "Partial implementation",
+      "detail": "Primary five-division intake plus Event→Catering is detailed. Every additional division does not get an independent full field set; initial unknown dates are allowed; files use protected post-inquiry upload. Menu/package selection is not a full order/inventory system."
+    },
+    {
+      "id": "G07",
+      "subject": "Advanced operational customization",
+      "state": "Partial implementation",
+      "detail": "Checklists/recurrence/ordered evidence are implemented; arbitrary checklist/SLA/calendar/rescheduling/customer milestone-signature/reallocation UX is not. Resources hold the full contract horizon conservatively. Written authorizations and acceptance remain human evidence."
+    },
+    {
+      "id": "G08",
+      "subject": "Organization and historical/marketing CRM",
+      "state": "Not implemented/partial",
+      "detail": "Organization is text, not shared membership/access. No attribution visitor pipeline, external-mailbox reply import, enterprise multi-task/calendar CRM, invoice/payment or complete historical-assessment reporting."
+    },
+    {
+      "id": "G09",
+      "subject": "Full production AI/evaluation",
+      "state": "Configuration + additional validation",
+      "detail": "Gateway covers eight capabilities through nine IDs with safe fallback, but no live provider, automated factual verifier, calibrated confidence, real token/currency cost meter or completed live bilingual/adversarial evaluation. Human factual/commercial authority is mandatory."
+    },
+    {
+      "id": "G10",
+      "subject": "Privacy/retention/immutable audit",
+      "state": "Legal/operational + partial implementation",
+      "detail": "Manual rights review/export and draft expiry exist; general legal retention/erasure across records/mail/processors/backups, legal holds and immutable offsite audit storage require approved policy/process/additional work."
+    },
+    {
+      "id": "G11",
+      "subject": "Performance/accessibility/security/operations acceptance",
+      "state": "Not certified",
+      "detail": "Local tests are not manual screen-reader/WCAG 2.2 AA/OWASP penetration testing, final-device low-bandwidth/p75 RUM target evidence, live alert delivery, independent concurrency/load acceptance, training or production RPO/RTO rehearsal."
+    },
+    {
+      "id": "G12",
+      "subject": "Design/management handover",
+      "state": "Partially delivered",
+      "detail": "Code components/tokens/specifications/standalone HTML/docs are supplied. Official brand package, separate Figma/Adobe source files and signed management/usability/legal handover are not supplied."
+    }
+  ]
+}

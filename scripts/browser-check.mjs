@@ -37,6 +37,23 @@ const check = (message) => {
   console.log("PASS", message);
 };
 const audit = async (route, state) => {
+  // Focus changes can start smooth scrolling; scanning mid-scroll makes fixed
+  // headers appear to obscure controls that are reachable once scrolling stops.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    let previous = window.scrollY;
+    let stable = 0;
+    for (let frame = 0; frame < 180; frame++) {
+      await new Promise(requestAnimationFrame);
+      const current = window.scrollY;
+      stable = current === previous ? stable + 1 : 0;
+      if (stable >= 8) return;
+      previous = current;
+    }
+    throw new Error(
+      "Page scrolling did not settle before accessibility audit.",
+    );
+  });
   const result = await new AxeBuilder({ page })
     .exclude("nextjs-portal")
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])

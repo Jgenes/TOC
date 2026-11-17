@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { EquipmentCatalogue } from "./public-content";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type CSSProperties,
+} from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -43,10 +50,11 @@ import {
   serviceIcons,
   useSite,
 } from "./site-shell";
+import { PublishedSection, ServiceCatalogue } from "./public-content";
 import { ContactForm } from "./request-form";
 
 function PhotoNote({ className = "" }: { className?: string }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <span className={`photo-note ${className}`}>
       {t(L("Illustrative photography", "Picha ya mfano"))}
@@ -55,7 +63,7 @@ function PhotoNote({ className = "" }: { className?: string }) {
 }
 
 export function ServiceCards() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <div className="service-grid">
       {services.map((service) => {
@@ -102,7 +110,7 @@ export function ServiceCards() {
 }
 
 export function Process({ light = false }: { light?: boolean }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <section
       className={`process-section section-pad${light ? " process-light" : ""}`}
@@ -164,7 +172,7 @@ export function FAQ({
   items: { question: Localized; answer: Localized }[];
   title?: Localized;
 }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <section className="faq-section section-pad">
       <div className="container faq-layout">
@@ -209,7 +217,7 @@ export function FAQ({
 }
 
 export function HomePage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   const promises = [
     {
       icon: CalendarDays,
@@ -232,107 +240,45 @@ export function HomePage() {
       sub: L("An occasion that feels like you", "Tukio linaloakisi wewe"),
     },
   ];
-  return (
-    <>
-      <section className="hero">
-        <img
-          className="hero-image"
-          src="/assets/hero.webp"
-          alt={t(
-            L(
-              "Illustrative elegantly prepared gala ballroom with chandeliers, red florals and dining tables",
-              "Picha ya mfano ya ukumbi wa sherehe ulioandaliwa kwa taa na maua mekundu",
-            ),
-          )}
-          width="1536"
-          height="688"
-          fetchPriority="high"
-        />
-        <div className="hero-shade" />
-        <div className="container hero-inner">
-          <div className="hero-copy">
-            <Eyebrow light>
-              {t(
-                L(
-                  "TOC INVESTMENT COMPANY LIMITED",
-                  "TOC INVESTMENT COMPANY LIMITED",
-                ),
-              )}
-            </Eyebrow>
-            <h1>
-              {t(L("Exceptional", "Matukio"))}
-              <br />
-              {t(L("experiences.", "ya kipekee."))}
-              <br />
-              <em>{t(L("A touch of class.", "Mguso wa ubora."))}</em>
-            </h1>
-            <p>
-              {t(
-                L(
-                  "Thoughtfully planned events. Considered catering. Seamless production. Bringing people together, beautifully.",
-                  "Hafla zilizopangwa kwa makini. Upishi bora. Uratibu mzuri wa kiufundi. Kuwaunganisha watu, kwa uzuri.",
-                ),
-              )}
-            </p>
-            <div className="hero-buttons">
-              <ButtonLink href="/services">
-                {t(L("Explore our services", "Fahamu huduma zetu"))}
-              </ButtonLink>
-              <Link href="/request-quotation" className="hero-secondary">
-                {t(L("Let’s plan together", "Tupange pamoja"))}
-                <ArrowUpRight size={18} />
-              </Link>
-            </div>
-            <a className="hero-scroll" href="#services">
-              <span>
-                <ArrowDown size={15} />
-              </span>
-              {t(L("DISCOVER THE TOC DIFFERENCE", "FAHAMU TOFAUTI YA TOC"))}
-            </a>
-          </div>
-          <div className="hero-location">
-            <span className="location-line" />
-            {t(
-              L(
-                "BASED IN DODOMA. CREATED AROUND YOU.",
-                "DODOMA. KWA AJILI YAKO.",
-              ),
-            )}
-          </div>
-          <div className="hero-image-caption">
-            <span>
-              {t(
-                L(
-                  "Good company.\nGreat occasions.",
-                  "Ushirika mzuri.\nMatukio bora.",
-                ),
-              )}
-            </span>
-            <Link
-              href="/gallery"
-              aria-label={t(
-                L("Explore visual inspiration", "Tazama picha za msukumo"),
-              )}
-            >
-              <ArrowUpRight size={25} />
-            </Link>
-          </div>
-          <PhotoNote className="hero-photo-note" />
-        </div>
-      </section>
-      <section className="promise-strip" aria-label="Our approach">
-        <div className="container promise-grid">
-          {promises.map(({ icon: Icon, title, sub }) => (
-            <div key={title.en}>
-              <Icon size={29} strokeWidth={1.4} />
-              <span>
-                <strong>{t(title)}</strong>
-                <small>{t(sub)}</small>
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
+  const homeRecord = content.find(
+    (item) => item.type === "homepage" && item.slug === "home",
+  );
+  const home = (homeRecord?.data as {
+    title: Localized;
+    summary: Localized;
+    heroImage: string;
+    heroAlt?: Localized;
+    heroPosition?: string;
+    heroMobilePosition?: string;
+    caption?: Localized;
+    primaryCta?: { label: Localized; href: string };
+    secondaryCta?: { label: Localized; href: string };
+    sections: string[];
+  }) || {
+    title: L(
+      "Exceptional experiences. Professional solutions.",
+      "Matukio bora. Suluhisho za kitaalamu.",
+    ),
+    summary: L(
+      "Events, catering, cleaning, ICT and production. Five connected services, one considered touch.",
+      "Hafla, upishi, usafi, TEHAMA na uzalishaji. Huduma tano zilizounganishwa kwa umakini.",
+    ),
+    heroImage: "/assets/hero.webp",
+    sections: [
+      "services",
+      "about",
+      "benefits",
+      "projects",
+      "process",
+      "gallery",
+      "clients",
+      "testimonials",
+      "news",
+      "contact",
+    ],
+  };
+  const blocks: Record<string, ReactNode> = {
+    services: (
       <section className="services-section section-pad" id="services">
         <div className="container">
           <div className="section-top">
@@ -374,6 +320,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+    ),
+    about: (
       <section className="about-preview section-pad">
         <div className="container about-preview-grid">
           <div className="about-visual">
@@ -410,8 +358,8 @@ export function HomePage() {
             <p>
               {t(
                 L(
-                  "We are TOC Investment Company Limited — Touch of Class. A Tanzanian company bringing event management, catering and related event services together for organizations, institutions and individuals.",
-                  "Sisi ni TOC Investment Company Limited — Touch of Class. Kampuni ya Tanzania inayounganisha usimamizi wa hafla, upishi na huduma zinazohusiana kwa mashirika, taasisi na watu binafsi.",
+                  "We are TOC Investment Company Limited — Touch of Class. A Tanzanian company connecting event management, catering, cleaning, ICT and production for organizations, institutions and individuals.",
+                  "Sisi ni TOC Investment Company Limited — Touch of Class. Kampuni ya Tanzania inayounganisha hafla, upishi, usafi, TEHAMA na uzalishaji kwa mashirika, taasisi na watu binafsi.",
                 ),
               )}
             </p>
@@ -452,6 +400,23 @@ export function HomePage() {
           </div>
         </div>
       </section>
+    ),
+    benefits: (
+      <section className="promise-strip" aria-label="Our approach">
+        <div className="container promise-grid">
+          {promises.map(({ icon: Icon, title, sub }) => (
+            <div key={title.en}>
+              <Icon size={29} strokeWidth={1.4} />
+              <span>
+                <strong>{t(title)}</strong>
+                <small>{t(sub)}</small>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    ),
+    gallery: (
       <section className="home-gallery section-pad">
         <div className="container">
           <div className="section-top">
@@ -532,17 +497,121 @@ export function HomePage() {
           </p>
         </div>
       </section>
-      <Process />
-      <FAQ
-        items={[services[0].faqs[0], services[1].faqs[2], services[0].faqs[2]]}
-      />
-      <ClosingCTA />
+    ),
+    process: <Process />,
+    projects: <PublishedSection type="project" />,
+    clients: <PublishedSection type="client" />,
+    testimonials: <PublishedSection type="testimonial" />,
+    news: <PublishedSection type="article" />,
+    contact: <ClosingCTA />,
+  };
+  return (
+    <>
+      <section className="hero">
+        <img
+          className="hero-image"
+          src={home.heroImage}
+          style={
+            {
+              "--media-position": home.heroPosition || "center",
+              "--media-mobile-position":
+                home.heroMobilePosition || home.heroPosition || "center",
+            } as CSSProperties
+          }
+          alt={t(
+            home.heroAlt ||
+              L(
+                "Illustrative elegantly prepared gala ballroom with chandeliers, red florals and dining tables",
+                "Picha ya mfano ya ukumbi wa sherehe ulioandaliwa kwa taa na maua mekundu",
+              ),
+          )}
+          width="1536"
+          height="688"
+          fetchPriority="high"
+        />
+        <div className="hero-shade" />
+        <div className="container hero-inner">
+          <div className="hero-copy">
+            <Eyebrow light>
+              {t(
+                L(
+                  "TOC INVESTMENT COMPANY LIMITED",
+                  "TOC INVESTMENT COMPANY LIMITED",
+                ),
+              )}
+            </Eyebrow>
+            <h1>
+              {t(home.title)}
+              <br />
+              <em>{t(L("A touch of class.", "Mguso wa ubora."))}</em>
+            </h1>
+            <p>{t(home.summary)}</p>
+            <div className="hero-buttons">
+              <ButtonLink href={home.primaryCta?.href || "/services"}>
+                {t(
+                  home.primaryCta?.label ||
+                    L("Explore our services", "Fahamu huduma zetu"),
+                )}
+              </ButtonLink>
+              <Link
+                href={home.secondaryCta?.href || "/request-quotation"}
+                className="hero-secondary"
+              >
+                {t(
+                  home.secondaryCta?.label ||
+                    L("Let’s plan together", "Tupange pamoja"),
+                )}
+                <ArrowUpRight size={18} />
+              </Link>
+            </div>
+            <a className="hero-scroll" href="#services">
+              <span>
+                <ArrowDown size={15} />
+              </span>
+              {t(L("DISCOVER THE TOC DIFFERENCE", "FAHAMU TOFAUTI YA TOC"))}
+            </a>
+          </div>
+          <div className="hero-location">
+            <span className="location-line" />
+            {t(
+              L(
+                "BASED IN DODOMA. CREATED AROUND YOU.",
+                "DODOMA. KWA AJILI YAKO.",
+              ),
+            )}
+          </div>
+          <div className="hero-image-caption">
+            <span>
+              {t(
+                L(
+                  "Good company.\nGreat occasions.",
+                  "Ushirika mzuri.\nMatukio bora.",
+                ),
+              )}
+            </span>
+            <Link
+              href="/gallery"
+              aria-label={t(
+                L("Explore visual inspiration", "Tazama picha za msukumo"),
+              )}
+            >
+              <ArrowUpRight size={25} />
+            </Link>
+          </div>
+          <PhotoNote className="hero-photo-note" />
+        </div>
+      </section>
+      {home.sections.map((key) => (
+        <div key={key} className={`home-block home-block-${key}`}>
+          {blocks[key]}
+        </div>
+      ))}
     </>
   );
 }
 
 export function ServicesPage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <>
       <section className="page-intro section-pad">
@@ -563,8 +632,8 @@ export function ServicesPage() {
             <p>
               {t(
                 L(
-                  "An important conference. A shared meal. A once-in-a-lifetime celebration. Whatever brings your people together, let’s make it feel special.",
-                  "Mkutano muhimu. Chakula cha pamoja. Sherehe ya pekee maishani. Chochote kinachowaleta watu wako pamoja, tufanye kiwe cha kipekee.",
+                  "Events, catering, cleaning, ICT and production. Five connected divisions, one thoughtful approach to your requirements.",
+                  "Hafla, upishi, usafi, TEHAMA na uzalishaji. Idara tano zilizounganishwa, mbinu moja makini kwa mahitaji yako.",
                 ),
               )}
             </p>
@@ -590,7 +659,7 @@ export function ServicesPage() {
               <p>
                 {t(
                   L(
-                    "Combine event planning, catering and production in a single inquiry. We’ll discuss the right scope with you.",
+                    "Combine requirements across our five divisions in a single inquiry. We’ll discuss the right scope with you.",
                     "Unganisha mipango ya hafla, upishi na uzalishaji katika ombi moja. Tutajadili huduma zinazokufaa.",
                   ),
                 )}
@@ -609,14 +678,27 @@ export function ServicesPage() {
 }
 
 export function ServiceDetailPage({ service }: { service: Service }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   const Icon = serviceIcons[service.icon];
   return (
     <>
       <section className="service-hero">
         <img
           src={service.image}
-          alt={service.imageAlt}
+          alt={
+            service.imageAltLocalized
+              ? t(service.imageAltLocalized)
+              : service.imageAlt
+          }
+          style={
+            {
+              "--media-position": service.imagePosition || "center",
+              "--media-mobile-position":
+                service.mobileImagePosition ||
+                service.imagePosition ||
+                "center",
+            } as CSSProperties
+          }
           width="1500"
           height="750"
           fetchPriority="high"
@@ -629,7 +711,10 @@ export function ServiceDetailPage({ service }: { service: Service }) {
             <h1>{t(service.headline)}</h1>
             <p>{t(service.description)}</p>
             <ButtonLink href={`/request-quotation?service=${service.slug}`}>
-              {t(L("Let’s plan your occasion", "Tupange tukio lako"))}
+              {t(
+                service.cta ||
+                  L("Let’s plan your occasion", "Tupange tukio lako"),
+              )}
             </ButtonLink>
           </div>
           <PhotoNote />
@@ -693,8 +778,53 @@ export function ServiceDetailPage({ service }: { service: Service }) {
           </p>
         </div>
       </section>
-      <Process />
-      <FAQ items={service.faqs} />
+      <ServiceCatalogue slug={service.slug} />
+      {service.slug === "entertainment" && (
+        <EquipmentCatalogue service={service.slug} />
+      )}
+      {service.workflow ? (
+        <section className="section-pad">
+          <div className="container">
+            <Eyebrow>{t(L("OUR APPROACH", "MBINU YETU"))}</Eyebrow>
+            <h2>
+              {t(
+                L(
+                  "From first conversation to handover.",
+                  "Kuanzia mazungumzo hadi makabidhiano.",
+                ),
+              )}
+            </h2>
+            <div className="capability-grid">
+              {service.workflow.map((item, i) => (
+                <article key={item.title.en}>
+                  <span className="capability-number">0{i + 1}</span>
+                  <h3>{t(item.title)}</h3>
+                  <p>{t(item.description)}</p>
+                </article>
+              ))}
+            </div>
+            {service.safety && (
+              <p className="scope-note">{t(service.safety)}</p>
+            )}
+          </div>
+        </section>
+      ) : (
+        <Process />
+      )}
+      <FAQ
+        items={[
+          ...service.faqs,
+          ...content
+            .filter(
+              (item) =>
+                item.type === "faq" && item.data.service === service.slug,
+            )
+            .map((item) => ({
+              question: item.data.title as Localized,
+              answer: (item.data.body || item.data.summary) as Localized,
+            })),
+        ]}
+      />
       <section className="related-section section-pad">
         <div className="container">
           <div className="section-top">
@@ -731,7 +861,7 @@ export function ServiceDetailPage({ service }: { service: Service }) {
 }
 
 export function AboutPage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <>
       <section className="about-page-intro section-pad">
@@ -802,8 +932,8 @@ export function AboutPage() {
             <p className="large-copy">
               {t(
                 L(
-                  "TOC Investment Company Limited is a Tanzanian business providing event management, catering and related event services for government institutions, businesses, organizations, schools and private clients.",
-                  "TOC Investment Company Limited ni kampuni ya Tanzania inayotoa huduma za usimamizi wa hafla, upishi na huduma zinazohusiana kwa taasisi za serikali, biashara, mashirika, shule na wateja binafsi.",
+                  "TOC Investment Company Limited is a Tanzanian business connecting event management, catering, cleaning, ICT and production services for institutions, organizations and private clients.",
+                  "TOC Investment Company Limited ni kampuni ya Tanzania inayounganisha huduma za hafla, upishi, usafi, TEHAMA na uzalishaji kwa taasisi, mashirika na wateja binafsi.",
                 ),
               )}
             </p>
@@ -869,7 +999,32 @@ export function AboutPage() {
 }
 
 export function GalleryPage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
+  const approvedImages = content
+    .filter(
+      (item) => item.type === "gallery" && typeof item.data.image === "string",
+    )
+    .map((item) => ({
+      id: item.id,
+      src: String(item.data.image),
+      category:
+        (
+          {
+            "event-management": "events",
+            catering: "catering",
+            entertainment: "production",
+            "general-cleaning": "cleaning",
+            "ict-solutions": "ict",
+          } as Record<string, string>
+        )[String(item.data.service)] || "events",
+      title: item.data.title as Localized,
+      subtitle: item.data.summary as Localized,
+      illustrative: false,
+    }));
+  const allImages = [
+    ...approvedImages,
+    ...galleryImages.map((image) => ({ ...image, illustrative: true })),
+  ];
   const [category, setCategory] = useState("all");
   const [active, setActive] = useState<number | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -877,8 +1032,8 @@ export function GalleryPage() {
   const previousFocus = useRef<HTMLElement | null>(null);
   const filtered =
     category === "all"
-      ? galleryImages
-      : galleryImages.filter((image) => image.category === category);
+      ? allImages
+      : allImages.filter((image) => image.category === category);
   useEffect(() => {
     if (active === null) return;
     previousFocus.current = document.activeElement as HTMLElement;
@@ -924,8 +1079,8 @@ export function GalleryPage() {
                 <span>
                   {t(
                     L(
-                      "Illustrative images from the planning blueprint and a generated design image. Not a portfolio of completed TOC projects.",
-                      "Picha za mfano kutoka mpango wa tovuti na picha iliyozalishwa kwa muundo. Si kazi zilizotekelezwa na TOC.",
+                      "Images marked illustrative come from the planning blueprint or generated design imagery, not completed TOC projects. Approved company media is separately identified.",
+                      "Picha zilizoandikwa za mfano ni za mpango wa tovuti au zilizozalishwa, si kazi za TOC. Picha za kampuni zilizoidhinishwa zinatambulishwa tofauti.",
                     ),
                   )}
                 </span>
@@ -943,6 +1098,8 @@ export function GalleryPage() {
                 { id: "events", label: L("Events", "Hafla") },
                 { id: "catering", label: L("Catering", "Upishi") },
                 { id: "production", label: L("Production", "Uzalishaji") },
+                { id: "cleaning", label: L("Cleaning", "Usafi") },
+                { id: "ict", label: L("ICT", "TEHAMA") },
               ].map((filter) => (
                 <button
                   key={filter.id}
@@ -974,7 +1131,7 @@ export function GalleryPage() {
                 <div className="gallery-item-image">
                   <img
                     src={image.src}
-                    alt={`Illustrative ${image.subtitle.en.toLowerCase()}`}
+                    alt={`${image.illustrative ? "Illustrative " : ""}${t(image.title)}`}
                     width="700"
                     height="520"
                     loading="lazy"
@@ -1060,15 +1217,19 @@ export function GalleryPage() {
           <figure>
             <img
               src={filtered[active].src}
-              alt={`Illustrative ${filtered[active].subtitle.en.toLowerCase()}`}
+              alt={`${filtered[active].illustrative ? "Illustrative " : ""}${t(filtered[active].title)}`}
             />
             <figcaption>
               <strong>{t(filtered[active].title)}</strong>
               <span>
                 {t(
                   L(
-                    "Illustrative image · Not a completed TOC project",
-                    "Picha ya mfano · Si kazi ya TOC",
+                    filtered[active].illustrative
+                      ? "Illustrative image · Not a completed TOC project"
+                      : "Approved TOC media · Publication permissions recorded",
+                    filtered[active].illustrative
+                      ? "Picha ya mfano · Si kazi ya TOC"
+                      : "Picha ya TOC iliyoidhinishwa · Ruhusa zimerekodiwa",
                   ),
                 )}
               </span>
@@ -1089,7 +1250,7 @@ export function GalleryPage() {
 }
 
 export function ContactPage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <>
       <section className="page-intro section-pad">
@@ -1229,13 +1390,10 @@ const legalCopy = {
         ),
       },
       {
-        title: L(
-          "How preview submissions are used",
-          "Matumizi ya taarifa za hakikisho",
-        ),
+        title: L("How inquiries are used", "Matumizi ya taarifa za maombi"),
         text: L(
-          "In preview mode, submissions are saved to the local application database for testing the inquiry workflow. They are not automatically emailed, sent to WhatsApp, or forwarded to TOC. Only authorized staff with the configured password can access the staff inbox. Please use fictional test data in this preview.",
-          "Katika hali ya hakikisho, maombi yanahifadhiwa katika hifadhidata ya programu kwa majaribio. Hayatumwi moja kwa moja kwa barua pepe, WhatsApp au TOC. Wafanyakazi wenye nenosiri lililowekwa pekee wanaweza kuona maombi. Tumia taarifa za mfano katika majaribio.",
+          `Submissions are saved in the application database for staff review. In preview mode, they are not automatically emailed or forwarded to TOC; please use fictional test data. When preview mode is off and SMTP is configured, form details are also emailed to ${company.email} for follow-up. No WhatsApp messages are sent. Only authorized staff with the configured password can access the website staff inbox. The approved retention and deletion policy must cover both database and mailbox copies.`,
+          `Maombi yanahifadhiwa katika hifadhidata kwa mapitio ya timu. Katika hali ya hakikisho, hayatumwi moja kwa moja kwa barua pepe au TOC; tumia taarifa za mfano. Hali ya hakikisho ikizimwa na SMTP ikiwekwa, taarifa za fomu pia hutumwa kwa ${company.email} kwa ufuatiliaji. Hakuna ujumbe wa WhatsApp unaotumwa. Wafanyakazi wenye nenosiri lililowekwa pekee wanaweza kuona kikasha cha tovuti. Sera iliyoidhinishwa ya kuhifadhi na kufuta taarifa lazima ihusishe hifadhidata na nakala za barua pepe.`,
         ),
       },
       {
@@ -1298,7 +1456,7 @@ const legalCopy = {
 };
 
 export function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   const copy = legalCopy[kind];
   return (
     <section className="legal-page section-pad">
@@ -1340,7 +1498,7 @@ export function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
 }
 
 export function QualityPage() {
-  const { t } = useSite();
+  const { t, catalog: services, profile: company, content } = useSite();
   return (
     <>
       <section className="page-intro section-pad">
